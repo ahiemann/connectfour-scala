@@ -90,11 +90,29 @@ class GameLogic () {
   }
 
   def setChip(column : Int, matchField : MatchfieldModel[PlayerModel], player : PlayerModel):Option[MatchfieldModel[PlayerModel]] = {
-    Some(matchField.setToken(getNextEmptyRow(0, column, player, matchField.rows),column,player))
+    getNextEmptyRow(column, matchField) match {
+      case Some(rowIndex) => Some( matchField.setToken(rowIndex, column,player) )
+      case None => None
+    }
   }
 
-  def getNextEmptyRow(row: Int, column: Int, p: PlayerModel, vec: Vector[Vector[PlayerModel]]): Int = {
-    if(!((vec(row)(column)).toString contains '-')) return getNextEmptyRow(row+1,column,p,vec)
-    else row
+  def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {
+
+    @tailrec
+    def getNextEmptyRow(rowIndex: Int, column:Int, matchField: MatchfieldModel[PlayerModel]) : Option[Int] = {
+      if (rowIndex == matchField.rows.size) {
+        None
+      }
+      else {
+        val rows = matchField.rows
+        if (matchField.rows(rowIndex)(column).sign != '-') {
+          getNextEmptyRow(rowIndex + 1, column, matchField)
+        } else {
+          Some(rowIndex)
+        }
+      }
+    }
+
+    getNextEmptyRow(0, column, matchField)
   }
 }
