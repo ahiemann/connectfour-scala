@@ -64,7 +64,7 @@ object ConnectFour {
           // return winner
           case Some(true) => Some(player.name)
           case Some(false) =>
-            if(gameLogic.checkIfDraw(matchField)) {
+            if(gameLogic.checkIfDraw(matrix)) {
               // no winner, but game is over
               None
             }

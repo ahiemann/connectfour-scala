@@ -77,10 +77,12 @@ class GameLogic () {
     maxCount
   }
 
-  /*TODO*/
   def checkIfDraw(matchField:MatchfieldModel[PlayerModel]): Boolean = {
-    //Test vorhanden, aber ohne Logik! Prüft momentan auf "false"
-    false
+    val result = matchField.rows.forall(
+      row => row.forall(player => { player.sign != '-' })
+    )
+
+    result
   }
 
   def getInitialMatchField() = {
