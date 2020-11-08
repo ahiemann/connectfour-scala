@@ -10,17 +10,17 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     val initialField = gameLogic.getInitialMatchField()
     val player1 = PlayerModel("Max Mustermann", 'x')
     val player2 = PlayerModel("Erika Mustermann", 'o')
-    val player3 = PlayerModel("NoPlayer", '-')
+    val noPlayerPlayer = PlayerModel("NoPlayer", '-')
 
 
 
 
     "return an initial match field" in {
-      gameLogic.getInitialMatchField().toString() should be("MatchfieldModel(Vector(Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      gameLogic.getInitialMatchField().toString should be("MatchfieldModel(Vector(Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
     }
 
     "return an Some(MatchfieldModel(...)) with one token" in {
-      gameLogic.setChip(0, initialField, player1).get.toString() should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      gameLogic.setChip(0, initialField, player1).get.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
     }
 
     "return the next free row for token" in {
@@ -55,6 +55,20 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       gameLogic.checkIfDraw(drawMatchField) should be (true)
     }
 
+    "return false if the game is not a draw" in {
+      val notDrawMatrix = Vector[Vector[PlayerModel]](
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(player2, player1, player2, player1, player2, player1, player2),
+        Vector(player1, player2, player1, player2, player1, player2, player1),
+        Vector(player2, player1, player2, player1, player2, player1, player2),
+        Vector(player1, player2, player1, player2, player1, player2, player1),
+        Vector(player2, player1, player2, player1, player2, player1, player2)
+      )
+      val notDrawMatchField = MatchfieldModel[PlayerModel](notDrawMatrix)
+
+      gameLogic.checkIfDraw(notDrawMatchField) should be (false)
+    }
+
     "return the number of successively tokens diagonal" in{
       val move1 = gameLogic.setChip(0, initialField, player1).get
       val move2 = gameLogic.setChip(1, move1, player1).get
@@ -62,7 +76,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       val move4 = gameLogic.setChip(2, move3, player1).get
       val move5 = gameLogic.setChip(2, move4, player1).get
       val move6 = gameLogic.setChip(2, move5, player1).get
-      val move7 = gameLogic.setChip(3, move6, new PlayerModel("Hans Peter", 'o')).get
+      val move7 = gameLogic.setChip(3, move6, PlayerModel("Hans Peter", 'o')).get
       val move8 = gameLogic.setChip(3, move7, player1).get
       val move9 = gameLogic.setChip(3, move8, player1).get
       val move10 = gameLogic.setChip(3, move9, player1).get
