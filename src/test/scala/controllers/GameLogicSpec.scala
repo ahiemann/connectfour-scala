@@ -25,10 +25,10 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
     "return the next free row for token" in {
       val column = 0
-      gameLogic.getNextEmptyRow(column, initialField) should be (0)
+      gameLogic.getNextEmptyRow(column, initialField) should be (Some(0))
       val move1 = gameLogic.setChip(column , initialField, player1).get
       val move2 = gameLogic.setChip(column, move1, player1).get
-      gameLogic.getNextEmptyRow(column, move2) should be (2)
+      gameLogic.getNextEmptyRow(column, move2) should be (Some(2))
     }
 
     "return the last free row for token" in {
@@ -38,7 +38,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       val move3 = gameLogic.setChip(column, move2, player1).get
       val move4 = gameLogic.setChip(column, move3, player1).get
       val move5 = gameLogic.setChip(column, move4, player1).get
-      gameLogic.getNextEmptyRow(column, move5) should be (5)
+      gameLogic.getNextEmptyRow(column, move5) should be (Some(5))
     }
 
     "return true if the game is draw" in {
