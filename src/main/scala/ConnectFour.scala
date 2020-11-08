@@ -25,7 +25,7 @@ object ConnectFour {
     // Get initial match field
     val matchField = gameLogic.getInitialMatchField()
 
-    // get randim index between 0 and 1
+    // get random index between 0 and 1
     val r = scala.util.Random
     val startPlayerIndex = r.nextInt(2)
 
@@ -41,13 +41,13 @@ object ConnectFour {
     printf(s"${player.name}, in which column should the chip be placed? ")
     val columnIndex = StdIn.readInt()
 
-    gameLogic.setChip(columnIndex, matchField, player) match {
+    gameLogic.setChip(columnIndex - 1, matchField, player) match {
       case None =>
         println("Selected column is already full. Please select another column to place chip")
         play(players, playerIndex, matchField, gameLogic)
 
       case Some(matrix) =>
-        println("------- 4 GEWINNT  -------")
+        println("------- Connect Four  -------")
         println("| " + players(0).name + " : " + players(0).sign)
         println("| " + players(1).name + " : " + players(1).sign)
         println("--------------------------")
@@ -58,7 +58,7 @@ object ConnectFour {
         println(matrix.rows(1))
         println(matrix.rows(0))
         println("---------------------------")
-        println("      |0| 1| 2| 3| 4| 5| 6|")
+        println("      |1| 2| 3| 4| 5| 6| 7|")
 
         gameLogic.checkIfSomeoneWon(matrix, player) match {
           // return winner
