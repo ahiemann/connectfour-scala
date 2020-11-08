@@ -1,6 +1,6 @@
 package controllers
 
-import model.{MatchfieldModel, PlayerModel}
+import model.{MatchfieldModel, PlayerModel, RoundModel}
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
@@ -13,7 +13,7 @@ class GameLogic () {
     * @param player
     * @return Option with the boolean if the game is won or None
     */
-  def checkIfSomeoneWon(matchfield : MatchfieldModel[PlayerModel], player: PlayerModel) : Option[Boolean] = {
+  def checkIfSomeoneWon(matchfield : MatchfieldModel[PlayerModel], player: PlayerModel) : Boolean = {
     val rows = matchfield.rows.map(_.map(_.name))
     val list = rows.map(_.map(_.contains(player.name))).toList
 
@@ -37,7 +37,7 @@ class GameLogic () {
       if(v1>=3 || v2>=3 || v3>=3 || v4>=3 || v5>=3 || v6>=3) true else false
     }
 
-    if(fourInColumn() || fourInRow() || fourDiagonalFromXTop()) return Some(true) else Some(false)
+    if(fourInColumn() || fourInRow() || fourDiagonalFromXTop()) true else false
   }
 
   def isSuccessively(list: List[Boolean], endNum: Int): Boolean = {
@@ -91,19 +91,46 @@ class GameLogic () {
     new MatchfieldModel[PlayerModel](new PlayerModel("NoPlayer", '-'))
   }
 
-  def setChip(column : Int, matchField : MatchfieldModel[PlayerModel], player : PlayerModel):Either[String, Option[MatchfieldModel[PlayerModel]]] = {
-    Try(getNextEmptyRow(column, matchField)) match {
-      case Success(result) =>  result match {
-        case Some(rowIndex) => Right(Some(matchField.setToken(rowIndex, column,player)))
-        case None => Right(None)
+  def setChip(roundData : Either[String, RoundModel]): Either[String, RoundModel] = roundData match {
+    case Right(roundData) => {
+      val columnIndex = roundData.columnIndex
+      val matchField = roundData.matchField
+      val player = roundData.player
+
+      Try(getNextEmptyRow(columnIndex, matchField)) match {
+        case Success(result) => result match {
+          case Some(rowIndex) =>
+            val updatedMatchfield = roundData.matchField.setToken(rowIndex, columnIndex, player)
+            Right(RoundModel(columnIndex,updatedMatchfield,player))
+          case None => Left("The column is full")
+        }
+        case Failure(exception) => Left(exception.getMessage)
       }
-      case Failure(exception) => Left(exception.getMessage)
     }
+    case Left(roundData) => Left(roundData)
+  }
+
+  def checkIfGameIsOver(roundData : Either[String, RoundModel]) : Either[String, Option[Boolean]] = roundData match {
+    case Right(roundData) =>
+      val matchField = roundData.matchField
+      val player = roundData.player
+
+      if (checkIfDraw(matchField)) {
+        Right(Some(false))
+      }
+      else if (checkIfSomeoneWon(matchField, player)) {
+        Right(Some(true))
+      }
+      else {
+        Right(None)
+      }
+
+    case Left(roundData) => Left(roundData)
   }
 
   def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {
 
-    if (! (0 to 5 contains column) ) throw new Exception("Invalid column")
+    if (! (0 to 6 contains column) ) throw new Exception("Invalid column")
 
     @tailrec
     def getNextEmptyRow(rowIndex: Int, column:Int, matchField: MatchfieldModel[PlayerModel]) : Option[Int] = {
