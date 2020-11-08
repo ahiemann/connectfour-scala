@@ -1,7 +1,9 @@
 package controllers
 
 import model.{MatchfieldModel, PlayerModel}
+
 import scala.annotation.tailrec
+import scala.util.{Failure, Success, Try}
 
 class GameLogic () {
   /**
@@ -89,14 +91,19 @@ class GameLogic () {
     new MatchfieldModel[PlayerModel](new PlayerModel("NoPlayer", '-'))
   }
 
-  def setChip(column : Int, matchField : MatchfieldModel[PlayerModel], player : PlayerModel):Option[MatchfieldModel[PlayerModel]] = {
-    getNextEmptyRow(column, matchField) match {
-      case Some(rowIndex) => Some( matchField.setToken(rowIndex, column,player) )
-      case None => None
+  def setChip(column : Int, matchField : MatchfieldModel[PlayerModel], player : PlayerModel):Either[String, Option[MatchfieldModel[PlayerModel]]] = {
+    Try(getNextEmptyRow(column, matchField)) match {
+      case Success(result) =>  result match {
+        case Some(rowIndex) => Right(Some(matchField.setToken(rowIndex, column,player)))
+        case None => Right(None)
+      }
+      case Failure(exception) => Left(exception.getMessage)
     }
   }
 
   def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {
+
+    if (! (0 to 5 contains column) ) throw new Exception("Invalid column")
 
     @tailrec
     def getNextEmptyRow(rowIndex: Int, column:Int, matchField: MatchfieldModel[PlayerModel]) : Option[Int] = {

@@ -20,24 +20,41 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return an Some(MatchfieldModel(...)) with one token" in {
-      gameLogic.setChip(0, initialField, player1).get.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      gameLogic.setChip(0, initialField, player1).getOrElse(None).get.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
     }
 
     "return the next free row for token" in {
       val column = 0
       gameLogic.getNextEmptyRow(column, initialField) should be (Some(0))
-      val move1 = gameLogic.setChip(column , initialField, player1).get
-      val move2 = gameLogic.setChip(column, move1, player1).get
+      val move1 = gameLogic.setChip(column, initialField, player1).getOrElse(None).get
+      val move2 = gameLogic.setChip(column, move1, player1).getOrElse(None).get
       gameLogic.getNextEmptyRow(column, move2) should be (Some(2))
+    }
+
+    "return None if the column where the token should be placed is full" in {
+      val fullColumn1 = Vector[Vector[PlayerModel]](
+        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+      )
+      val matchfield = MatchfieldModel(fullColumn1)
+      gameLogic.getNextEmptyRow(0, matchfield) should be (None)
+    }
+
+    "should fail if the column where the token should be placed is outside of the range 0 to 5" in {
+       an [Exception] should be thrownBy gameLogic.getNextEmptyRow(10, initialField)
     }
 
     "return the last free row for token" in {
       val column = 0
-      val move1 = gameLogic.setChip(column , initialField, player1).get
-      val move2 = gameLogic.setChip(column, move1, player1).get
-      val move3 = gameLogic.setChip(column, move2, player1).get
-      val move4 = gameLogic.setChip(column, move3, player1).get
-      val move5 = gameLogic.setChip(column, move4, player1).get
+      val move1 = gameLogic.setChip(column , initialField, player1).getOrElse(None).get
+      val move2 = gameLogic.setChip(column, move1, player1).getOrElse(None).get
+      val move3 = gameLogic.setChip(column, move2, player1).getOrElse(None).get
+      val move4 = gameLogic.setChip(column, move3, player1).getOrElse(None).get
+      val move5 = gameLogic.setChip(column, move4, player1).getOrElse(None).get
       gameLogic.getNextEmptyRow(column, move5) should be (Some(5))
     }
 
@@ -70,16 +87,16 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return the number of successively tokens diagonal" in{
-      val move1 = gameLogic.setChip(0, initialField, player1).get
-      val move2 = gameLogic.setChip(1, move1, player1).get
-      val move3 = gameLogic.setChip(1, move2, player1).get
-      val move4 = gameLogic.setChip(2, move3, player1).get
-      val move5 = gameLogic.setChip(2, move4, player1).get
-      val move6 = gameLogic.setChip(2, move5, player1).get
-      val move7 = gameLogic.setChip(3, move6, PlayerModel("Hans Peter", 'o')).get
-      val move8 = gameLogic.setChip(3, move7, player1).get
-      val move9 = gameLogic.setChip(3, move8, player1).get
-      val move10 = gameLogic.setChip(3, move9, player1).get
+      val move1 = gameLogic.setChip(0, initialField, player1).getOrElse(None).get
+      val move2 = gameLogic.setChip(1, move1, player1).getOrElse(None).get
+      val move3 = gameLogic.setChip(1, move2, player1).getOrElse(None).get
+      val move4 = gameLogic.setChip(2, move3, player1).getOrElse(None).get
+      val move5 = gameLogic.setChip(2, move4, player1).getOrElse(None).get
+      val move6 = gameLogic.setChip(2, move5, player1).getOrElse(None).get
+      val move7 = gameLogic.setChip(3, move6, PlayerModel("Hans Peter", 'o')).getOrElse(None).get
+      val move8 = gameLogic.setChip(3, move7, player1).getOrElse(None).get
+      val move9 = gameLogic.setChip(3, move8, player1).getOrElse(None).get
+      val move10 = gameLogic.setChip(3, move9, player1).getOrElse(None).get
       gameLogic.countDiagonal(6,0,0,"",0,0, move10.rows.map(_.map(_.name))) should be (4)
     }
 
@@ -91,6 +108,8 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     "return false if player1 doesnt won with 3 tokens horizontal" in {}
     "return false if player1 doesnt won with 3 tokens vertical" in {}
 
+    "recognize correct user input" in { assert(false) }
+    "recognize incorrect user input" in { assert(false) }
 
   //  "check whether the game is over" in {}
   //  "check whether the game continues" in {}
