@@ -80,19 +80,19 @@ class GameLogic () {
   }
 
   def checkIfDraw(matchField:MatchfieldModel[PlayerModel]): Boolean = {
-    val result = matchField.rows.forall(
-      row => row.forall(player => { player.sign != '-' })
+    matchField.rows.forall(
+      row => row.forall(
+        player => { player.sign != '-' }
+      )
     )
-
-    result
   }
 
   def getInitialMatchField() = {
     new MatchfieldModel[PlayerModel](new PlayerModel("NoPlayer", '-'))
   }
 
-  def setChip(roundData : Either[String, RoundModel]): Either[String, RoundModel] = roundData match {
-    case Right(roundData) => {
+  def setChip(roundData : Try[RoundModel]): Try[RoundModel] = roundData match {
+    case Success(roundData) => {
       val columnIndex = roundData.columnIndex
       val matchField = roundData.matchField
       val player = roundData.player
@@ -101,31 +101,31 @@ class GameLogic () {
         case Success(result) => result match {
           case Some(rowIndex) =>
             val updatedMatchfield = roundData.matchField.setToken(rowIndex, columnIndex, player)
-            Right(RoundModel(columnIndex,updatedMatchfield,player))
-          case None => Left("The column is full")
+            Success(RoundModel(columnIndex,updatedMatchfield,player))
+          case None => Failure(new Exception("The column is full"))
         }
-        case Failure(exception) => Left(exception.getMessage)
+        case Failure(exception) => Failure(exception)
       }
     }
-    case Left(roundData) => Left(roundData)
+    case Failure(roundData) => Failure(roundData)
   }
 
-  def checkIfGameIsOver(roundData : Either[String, RoundModel]) : Either[String, Option[Boolean]] = roundData match {
-    case Right(roundData) =>
+  def checkIfGameIsOver(roundData : Try[RoundModel]) : Try[Option[Boolean]] = roundData match {
+    case Success(roundData) =>
       val matchField = roundData.matchField
       val player = roundData.player
 
       if (checkIfDraw(matchField)) {
-        Right(Some(false))
+        Success(Some(false))
       }
       else if (checkIfSomeoneWon(matchField, player)) {
-        Right(Some(true))
+        Success(Some(true))
       }
       else {
-        Right(None)
+        Success(None)
       }
 
-    case Left(roundData) => Left(roundData)
+    case Failure(roundData) => Failure(roundData)
   }
 
   def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {

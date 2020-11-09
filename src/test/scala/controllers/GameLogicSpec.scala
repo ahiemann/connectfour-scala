@@ -4,6 +4,8 @@ import model.{MatchfieldModel, PlayerModel, RoundModel}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.util.Success
+
 class GameLogicSpec extends AnyWordSpec with Matchers {
   "The GameLogic" should {
     val gameLogic = new GameLogic()
@@ -11,7 +13,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     val player1 = PlayerModel("Max Mustermann", 'x')
     val player2 = PlayerModel("Erika Mustermann", 'o')
     val noPlayerPlayer = PlayerModel("NoPlayer", '-')
-    val initialRoundModel = Right(RoundModel(0, initialField, player1)).withLeft[String]
+    val initialRoundModel = Success(RoundModel(0, initialField, player1))
 
 
     "return an initial match field" in {
@@ -19,7 +21,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return an Some(MatchfieldModel(...)) with one token" in {
-      gameLogic.setChip(initialRoundModel).getOrElse(throw new Exception("No RoundModel found")).matchField.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      gameLogic.setChip(initialRoundModel).get.matchField.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
     }
 
     "return the next free row for token" in {
@@ -27,7 +29,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       gameLogic.getNextEmptyRow(column, initialField) should be (Some(0))
       val round1Result = gameLogic.setChip(initialRoundModel)
       val round2Result = gameLogic.setChip(round1Result)
-      val round2Field = round2Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round2Field = round2Result.get.matchField
       gameLogic.getNextEmptyRow(column, round2Field) should be (Some(2))
     }
 
@@ -56,7 +58,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       val round4Result = gameLogic.setChip(round3Result)
       val round5Result = gameLogic.setChip(round4Result)
 
-      val round5matchField = round5Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round5matchField = round5Result.get.matchField
       gameLogic.getNextEmptyRow(column, round5matchField) should be (Some(5))
     }
 
@@ -90,34 +92,34 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
     "return the number of successively tokens diagonal" in {
       val round1Result = gameLogic.setChip(initialRoundModel)
-      val round1MatchField = round1Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round1MatchField = round1Result.get.matchField
 
-      val round2Result = gameLogic.setChip(Right(RoundModel(1, round1MatchField, player1)).withLeft[String])
-      val round2MatchField = round2Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round2Result = gameLogic.setChip(Success(RoundModel(1, round1MatchField, player1)))
+      val round2MatchField = round2Result.get.matchField
 
-      val round3Result = gameLogic.setChip(Right(RoundModel(1, round2MatchField, player1)).withLeft[String])
-      val round3MatchField = round3Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round3Result = gameLogic.setChip(Success(RoundModel(1, round2MatchField, player1)))
+      val round3MatchField = round3Result.get.matchField
 
-      val round4Result = gameLogic.setChip(Right(RoundModel(2, round3MatchField, player1)).withLeft[String])
-      val round4MatchField = round4Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round4Result = gameLogic.setChip(Success(RoundModel(2, round3MatchField, player1)))
+      val round4MatchField = round4Result.get.matchField
 
-      val round5Result = gameLogic.setChip(Right(RoundModel(2, round4MatchField, player1)).withLeft[String])
-      val round5MatchField = round5Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round5Result = gameLogic.setChip(Success(RoundModel(2, round4MatchField, player1)))
+      val round5MatchField = round5Result.get.matchField
 
-      val round6Result = gameLogic.setChip(Right(RoundModel(2, round5MatchField, player1)).withLeft[String])
-      val round6MatchField = round6Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round6Result = gameLogic.setChip(Success(RoundModel(2, round5MatchField, player1)))
+      val round6MatchField = round6Result.get.matchField
 
-      val round7Result = gameLogic.setChip(Right(RoundModel(3, round6MatchField, PlayerModel("Hans Peter", 'o'))).withLeft[String])
-      val round7MatchField = round7Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round7Result = gameLogic.setChip(Success(RoundModel(3, round6MatchField, PlayerModel("Hans Peter", 'o'))))
+      val round7MatchField = round7Result.get.matchField
 
-      val round8Result = gameLogic.setChip(Right(RoundModel(3, round7MatchField, player1)).withLeft[String])
-      val round8MatchField = round8Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round8Result = gameLogic.setChip(Success(RoundModel(3, round7MatchField, player1)))
+      val round8MatchField = round8Result.get.matchField
 
-      val round9Result = gameLogic.setChip(Right(RoundModel(3, round8MatchField, player1)).withLeft[String])
-      val round9MatchField = round9Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round9Result = gameLogic.setChip(Success(RoundModel(3, round8MatchField, player1)))
+      val round9MatchField = round9Result.get.matchField
 
-      val round10Result = gameLogic.setChip(Right(RoundModel(3, round9MatchField, player1)).withLeft[String])
-      val round10MatchField = round10Result.getOrElse(throw new Exception("No RoundModel found")).matchField
+      val round10Result = gameLogic.setChip(Success(RoundModel(3, round9MatchField, player1)))
+      val round10MatchField = round10Result.get.matchField
 
       gameLogic.countDiagonal(6,0,0,"",0,0, round10MatchField.rows.map(_.map(_.name))) should be (4)
     }

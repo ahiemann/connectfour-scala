@@ -41,18 +41,16 @@ object ConnectFour {
     val player = players(playerIndex)
     println(s"${player.name}, in which column should the chip be placed? ")
 
-    // val columnIndex = StdIn.readInt()
-
     val roundModel = Try(StdIn.readInt()) match {
       case Success(columnIndexInt) =>
         val adaptedInt = columnIndexInt - 1 // our index starts at 0, the one for the user at 1
-        Right(RoundModel(adaptedInt, matchField, player))
-      case Failure(_) => Left("Wrong input. Please type the number of the column where you would like to insert your chip")
+        Success(RoundModel(adaptedInt, matchField, player))
+      case Failure(_) => Failure(new Exception("Wrong input. Please type the number of the column where you would like to insert your chip"))
     }
 
     val roundModelWithChipSet = gameLogic.setChip(roundModel)
     gameLogic.checkIfGameIsOver(roundModelWithChipSet) match {
-      case Right(result) => result match {
+      case Success(result) => result match {
         case Some(true) => Some(player.name) // return winner
         case Some(false) => None // No winner, but game is over
         case None => // No winner, no draw, game continues
@@ -73,9 +71,9 @@ object ConnectFour {
           val nextPlayerIndex = if (playerIndex == 0) 1 else 0
           play(players, nextPlayerIndex, matrix, gameLogic)
       }
-      case Left(result) =>
+      case Failure(result) =>
         // there was an issue. Output and restart round for same player
-        println(result)
+        println(result.getMessage)
         play(players, playerIndex, matchField, gameLogic)
     }
   }
