@@ -31,7 +31,7 @@ object ConnectFour {
     val startPlayerIndex = r.nextInt(2)
 
     play(players, startPlayerIndex, matchField, gameLogic) match {
-      case Some(pName) => println(s"Congratulations ${pName}! You have won!")
+      case Some(pName) => println(s"Congratulations $pName! You have won!")
       case None => println(s"Draw. The game is over.")
     }
   }
@@ -47,7 +47,7 @@ object ConnectFour {
       case Success(columnIndexInt) =>
         val adaptedInt = columnIndexInt - 1 // our index starts at 0, the one for the user at 1
         Right(RoundModel(adaptedInt, matchField, player))
-      case Failure(exception) => Left("Wrong input. Please type the number of the column where you would like to insert your chip")
+      case Failure(_) => Left("Wrong input. Please type the number of the column where you would like to insert your chip")
     }
 
     val roundModelWithChipSet = gameLogic.setChip(roundModel)
