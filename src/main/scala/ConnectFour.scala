@@ -31,7 +31,7 @@ object ConnectFour {
     val startPlayerIndex = r.nextInt(2)
 
     play(players, startPlayerIndex, matchField, gameLogic) match {
-      case Some(pName) => println(s"Congratulations " + pName + "! You have won!")
+      case Some(pName) => println(s"Congratulations ${pName}! You have won!")
       case None => println(s"Draw. The game is over.")
     }
   }
