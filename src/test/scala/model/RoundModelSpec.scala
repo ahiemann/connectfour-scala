@@ -1,0 +1,26 @@
+package model
+
+import org.scalatest.matchers.should
+import org.scalatest.wordspec.AnyWordSpec
+
+class RoundModelSpec extends AnyWordSpec with should.Matchers {
+  "A RoundModel" should {
+    val player1 = PlayerModel("Max Mustermann", 'X')
+    val player2 = PlayerModel("Erika Mustermann", 'O')
+    val noPlayerPlayer = PlayerModel("NoPlayer", '-')
+
+    val matchfield = MatchfieldModel(Vector[Vector[PlayerModel]](
+      Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+      Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+      Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+      Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+      Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+      Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer)
+    ))
+
+    val roundModel = RoundModel(0, matchfield, player1)
+    "have a column index" in { roundModel.columnIndex should be (0) }
+    "have an instance of a matchfield" in { roundModel.matchField should === (matchfield)}
+    "have an instance of a player that belongs to this round" in { roundModel.player should === (player1) }
+  }
+}
