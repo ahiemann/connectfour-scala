@@ -5,3 +5,4 @@ case class PlayerModel(name: String = "player", sign: Char = 'X') {
     this.sign.toString
   }
 }
+

@@ -30,41 +30,40 @@ object ConnectFour {
     val startPlayerIndex = r.nextInt(2)
 
     play(players, startPlayerIndex, matchField, gameLogic) match {
-      case Some(p) => println(s"Player ${p.name} has won the game!")
+      case Some(pName) => println(s"Congratulations " + pName + "! You have won!")
       case None => println(s"Draw. The game is over.")
     }
   }
 
-  // play(players, RoundIndex, matchField, gamelogic) : Option[PlayerModel]
-  //  - Ruft sich rekursiv selbst auf.
-  //  - Fragt nach Spalte in welche Chip gesetzt werden soll
-  //  - setzt Chip inder Spalte (Funktion gibt matchField bei Erfolg zurück, None wenn Spalte voll ist)
-  //    - Wenn Rueckgabe None: Hinweis per printf, rekursiver Aufruf mit selben Daten
-  //    - Wenn Rueckgabe Some: Matchfield per printf ausgeben
-  //  - Ende wenn:
-  //    -Gewinner (gibt PlayerModel zurück) -> PlayerModel zuruckgeben
-  //    - oder Unentschieden (Boolean).  -> None zurueckgeben
-  // - Rekursion: Aufruf mit invertiertem index
-  // Gewinner verkuenden/unentschieden
-
   @tailrec
-  private def play(players: Vector[PlayerModel], playerIndex: Int, matchField: MatchfieldModel, gameLogic: GameLogic): Option[PlayerModel] = {
+  private def play(players: Vector[PlayerModel], playerIndex: Int, matchField: MatchfieldModel[PlayerModel], gameLogic: GameLogic): Option[String] = {
     val player = players(playerIndex)
-    printf(s"${player.name}, in which column should the chip be placed?")
+    printf(s"${player.name}, in which column should the chip be placed? ")
     val columnIndex = StdIn.readInt()
 
     gameLogic.setChip(columnIndex, matchField, player) match {
       case None =>
         println("Selected column is already full. Please select another column to place chip")
         play(players, playerIndex, matchField, gameLogic)
-      case Some(m) =>
-        println(m)
 
-        gameLogic.checkIfSomeoneWon(m) match {
+      case Some(matrix) =>
+        println("------- 4 GEWINNT  -------")
+        println("| " + players(0).name + " : " + players(0).sign)
+        println("| " + players(1).name + " : " + players(1).sign)
+        println("--------------------------")
+        println(matrix.rows(5))
+        println(matrix.rows(4))
+        println(matrix.rows(3))
+        println(matrix.rows(2))
+        println(matrix.rows(1))
+        println(matrix.rows(0))
+        println("---------------------------")
+        println("      |0| 1| 2| 3| 4| 5| 6|")
+
+        gameLogic.checkIfSomeoneWon(matrix, player) match {
           // return winner
-          case Some(w) => Some(w)
-
-          case None =>
+          case Some(true) => Some(player.name)
+          case Some(false) =>
             if(gameLogic.checkIfDraw(matchField)) {
               // no winner, but game is over
               None
@@ -73,7 +72,7 @@ object ConnectFour {
               // Game not over yet, recurse
               // toggle playerIndex
               val nextPlayerIndex = if (playerIndex == 0) 1 else 0
-              play(players, nextPlayerIndex, matchField, gameLogic)
+              play(players, nextPlayerIndex, matrix, gameLogic)
             }
         }
     }
