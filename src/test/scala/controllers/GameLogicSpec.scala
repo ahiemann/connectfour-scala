@@ -51,7 +51,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       val move8 = gameLogic.setChip(3, move7, player).get
       val move9 = gameLogic.setChip(3, move8, player).get
       val move10 = gameLogic.setChip(3, move9, player).get
-      gameLogic.countDiagonal(6,0,0,"",0,0, move10.rows.map(_.map(_.name))) should be (4)
+      gameLogic.countDiagonal(6,0,0,"",0,0, move10.rows.map(_.map(_.name))) should be (3)
     }
 
     "return the boolean of successively tokens diagonal" in{
@@ -95,7 +95,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       val move8 = gameLogic.setChip(3, move7, player).get
       val move9 = gameLogic.setChip(3, move8, player).get
       val move10 = gameLogic.setChip(3, move9, player).get
-      gameLogic.countDiagonal(6,0,0,"",0,0, move10.rows.map(_.map(_.name))) should be (4)
+      gameLogic.countDiagonal(6,0,0,"",0,0, move10.rows.map(_.map(_.name))) should be (3)
     }
 
     "return the boolean of unsuccessively tokens diagonal" in{
