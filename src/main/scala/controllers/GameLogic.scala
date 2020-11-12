@@ -15,7 +15,7 @@ class GameLogic () {
     */
   def checkIfSomeoneWon(matchfield : MatchfieldModel[PlayerModel], player: PlayerModel) : Boolean = {
     val rows = matchfield.rows.map(_.map(_.name))
-    val list = rows.map(_.map(_.contains(player.name))).toList
+    val list = rows.map(_.map(_.equals(player.name))).toList
 
     def fourInColumn() : Boolean = {
       val resultList = list.transpose.map(x =>isSuccessively(x.toList,3)).filter(_ == true)
@@ -59,8 +59,10 @@ class GameLogic () {
             } else{successivelyCount}
           }
           else {
-            val max = if (successivelyCount > maxCount) successivelyCount else maxCount
-            numberOfSuccessivelySymbols(tail, maxCount = max) // If row of equals symbols is broken
+            // val max = if (successivelyCount > maxCount) successivelyCount
+            // else maxCount
+            // numberOfSuccessivelySymbols(tail, maxCount = max) // If row of equals symbols is broken
+            numberOfSuccessivelySymbols(tail, maxCount) // If row of equals symbols is broken
           }
       case _ => maxCount // If list is empty or last symbol
     }
@@ -68,12 +70,12 @@ class GameLogic () {
 
   def countDiagonal(maxLength: Int = 6, posX: Int = 0, posY: Int = 0, lastState: String = "", count: Int = 0, maxCount: Int = 0, rows: Vector[Vector[String]]): Int ={
     if(posX < maxLength){
-      if((rows(posX)(posY) contains lastState) && !(rows(posX)(posY) contains "NoPlayer"))
+      if((rows(posX)(posY) equals  lastState) && !(rows(posX)(posY) equals "NoPlayer"))
         return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),count+1, maxCount+1,rows)
       else
-        if(count > maxCount)
-          return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),0, count,rows)
-        else
+       // if(count > maxCount)
+       //   return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),0, count,rows)
+       // else
           return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),0, maxCount,rows)
     }
     maxCount
