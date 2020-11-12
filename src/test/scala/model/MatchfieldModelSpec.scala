@@ -3,7 +3,6 @@ package model
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-
 class MatchfieldModelSpec extends AnyWordSpec with Matchers {
   "A MatchfieldModel" when {
     "empty" should {
