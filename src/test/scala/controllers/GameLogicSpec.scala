@@ -4,7 +4,7 @@ import model.{MatchfieldModel, PlayerModel, RoundModel}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.util.Success
+import scala.util.{Failure, Success}
 
 class GameLogicSpec extends AnyWordSpec with Matchers {
   "The GameLogic" should {
@@ -88,6 +88,52 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       val notDrawMatchField = MatchfieldModel[PlayerModel](notDrawMatrix)
 
       gameLogic.checkIfDraw(notDrawMatchField) should be (false)
+    }
+
+    "return a Success(Some(false)) if the game is over because it's a draw" in {
+      val drawMatrix = Vector[Vector[PlayerModel]](
+        Vector(player1, player2, player1, player2, player1, player2, player1),
+        Vector(player2, player1, player2, player1, player2, player1, player2),
+        Vector(player1, player2, player1, player2, player1, player2, player1),
+        Vector(player2, player1, player2, player1, player2, player1, player2),
+        Vector(player1, player2, player1, player2, player1, player2, player1),
+        Vector(player2, player1, player2, player1, player2, player1, player2)
+      )
+      val drawMatchField = MatchfieldModel[PlayerModel](drawMatrix)
+
+      gameLogic.checkIfGameIsOver(Success(RoundModel(0, drawMatchField, player1))) should be (Success(Some(false)))
+    }
+
+    "return a Success(Some(true)) if the game is over because a player won" in {
+      val drawMatrix = Vector[Vector[PlayerModel]](
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(player1, player1, player1, player1, player2, player1, player2)
+      )
+      val winnerMatchField = MatchfieldModel[PlayerModel](drawMatrix)
+
+      gameLogic.checkIfGameIsOver(Success(RoundModel(0, winnerMatchField, player1))) should be (Success(Some(true)))
+    }
+
+    "return a Success(None) if the game continues" in {
+      val drawMatrix = Vector[Vector[PlayerModel]](
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+        Vector(player1, player2, player1, player2, player2, player1, player2)
+      )
+      val gameNotOverMatchfield = MatchfieldModel[PlayerModel](drawMatrix)
+
+      gameLogic.checkIfGameIsOver(Success(RoundModel(0, gameNotOverMatchfield, player1))) should be (Success(None))
+    }
+
+    "return a Failure if the input for checkIfGameIsOver already was a failure" in {
+      gameLogic.checkIfGameIsOver(Failure(new Exception("Not relevant"))) should be (Failure)
     }
 
     "return the number of successively tokens diagonal" in {
