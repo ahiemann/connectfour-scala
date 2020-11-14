@@ -5,7 +5,7 @@ import model.{MatchfieldModel, PlayerModel, RoundModel}
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-class GameLogic () {
+object GameLogic {
   /**
     * Check if a player has 4 chips in one row, column or diagonal
     *

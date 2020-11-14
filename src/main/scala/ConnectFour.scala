@@ -9,7 +9,6 @@ object ConnectFour {
 
   def main(args:Array[String]): Unit = {
 
-    val gameLogic = new GameLogic()
 
     // Create players
     println("Please type in name of player 1:")
@@ -24,20 +23,20 @@ object ConnectFour {
     val players = Vector[PlayerModel](player1, player2)
 
     // Get initial match field
-    val matchField = gameLogic.getInitialMatchField()
+    val matchField = GameLogic.getInitialMatchField()
 
     // get random index between 0 and 1
     val r = scala.util.Random
     val startPlayerIndex = r.nextInt(2)
 
-    play(players, startPlayerIndex, matchField, gameLogic) match {
+    play(players, startPlayerIndex, matchField) match {
       case Some(pName) => println(s"Congratulations $pName! You have won!")
       case None => println(s"Draw. The game is over.")
     }
   }
 
   @tailrec
-  private def play(players: Vector[PlayerModel], playerIndex: Int, matchField: MatchfieldModel[PlayerModel], gameLogic: GameLogic): Option[String] = {
+  private def play(players: Vector[PlayerModel], playerIndex: Int, matchField: MatchfieldModel[PlayerModel]): Option[String] = {
     val player = players(playerIndex)
     println(s"${player.name}, in which column should the chip be placed? ")
 
@@ -48,8 +47,8 @@ object ConnectFour {
       case Failure(_) => Failure(new Exception("Wrong input. Please type the number of the column where you would like to insert your chip"))
     }
 
-    val roundModelWithChipSet = gameLogic.setChip(roundModel)
-    gameLogic.checkIfGameIsOver(roundModelWithChipSet) match {
+    val roundModelWithChipSet = GameLogic.setChip(roundModel)
+    GameLogic.checkIfGameIsOver(roundModelWithChipSet) match {
       case Success(result) => result match {
         case Some(true) => Some(player.name) // return winner
         case Some(false) => None // No winner, but game is over
@@ -69,12 +68,12 @@ object ConnectFour {
           println("      |1| 2| 3| 4| 5| 6| 7|")
 
           val nextPlayerIndex = if (playerIndex == 0) 1 else 0
-          play(players, nextPlayerIndex, matrix, gameLogic)
+          play(players, nextPlayerIndex, matrix)
       }
       case Failure(result) =>
         // there was an issue. Output and restart round for same player
         println(result.getMessage)
-        play(players, playerIndex, matchField, gameLogic)
+        play(players, playerIndex, matchField)
     }
   }
 
