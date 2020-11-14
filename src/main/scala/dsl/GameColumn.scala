@@ -9,6 +9,8 @@ object GameColumn {
     def ->(player:PlayerModel):GameColumnPlayerMapping = {
       GameColumnPlayerMapping(column, player)
     }
+    def insert(player:PlayerModel):GameColumnPlayerMapping = {
+      GameColumnPlayerMapping(column, player)
+    }
   }
-
 }
