@@ -9,15 +9,10 @@ object ConnectFour {
 
   def main(args:Array[String]): Unit = {
 
-
     // Create players
-    println("Please type in name of player 1:")
-    val name1 = StdIn.readLine()
-    println("Please type in name of player 2:")
-    val name2 = StdIn.readLine()
+    val player1 = GameLogic.getInitialPlayerModel(args(0),'x')
+    val player2 = GameLogic.getInitialPlayerModel(args(1),'o')
 
-    val player1 = PlayerModel(name1, 'x')
-    val player2 = PlayerModel(name2, 'o')
     println(s"Symbol of player ${player1.name} is ${player1.sign}")
     println(s"Symbol of player ${player2.name} is ${player2.sign}")
     val players = Vector[PlayerModel](player1, player2)
@@ -39,7 +34,6 @@ object ConnectFour {
   private def play(players: Vector[PlayerModel], playerIndex: Int, matchField: MatchfieldModel[PlayerModel]): Option[String] = {
     val player = players(playerIndex)
     println(s"${player.name}, in which column should the chip be placed? ")
-
     val roundModel = Try(StdIn.readInt()) match {
       case Success(columnIndexInt) =>
         val adaptedInt = columnIndexInt - 1 // our index starts at 0, the one for the user at 1
@@ -54,19 +48,7 @@ object ConnectFour {
         case Some(false) => None // No winner, but game is over
         case None => // No winner, no draw, game continues
           val matrix = roundModelWithChipSet.getOrElse(throw new Exception("No round data found")).matchField
-          println("------- Connect Four  -------")
-          println("| " + players(0).name + " : " + players(0).sign)
-          println("| " + players(1).name + " : " + players(1).sign)
-          println("--------------------------")
-          println(matrix.rows(5))
-          println(matrix.rows(4))
-          println(matrix.rows(3))
-          println(matrix.rows(2))
-          println(matrix.rows(1))
-          println(matrix.rows(0))
-          println("---------------------------")
-          println("      |1| 2| 3| 4| 5| 6| 7|")
-
+          println(GameLogic.getMatchfieldOutput(players, matrix))
           val nextPlayerIndex = if (playerIndex == 0) 1 else 0
           play(players, nextPlayerIndex, matrix)
       }
@@ -76,5 +58,4 @@ object ConnectFour {
         play(players, playerIndex, matchField)
     }
   }
-
 }
