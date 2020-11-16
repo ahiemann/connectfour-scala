@@ -52,6 +52,21 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
        an [Exception] should be thrownBy GameLogic.getNextEmptyRow(10, initialField)
     }
 
+    "return a new Player with Name and sign" in {
+      GameLogic.getInitialPlayerModel("Pascal", 'x').name should be ("Pascal")
+    }
+
+    "return with an empty list the value false" in {
+      GameLogic.checkIfSomeoneWon(initialField, player1) should be (false)
+    }
+
+    "return an string output from matchfield" in {
+      val players = Vector[PlayerModel](player1, player2)
+      val currentMatchField = initialField.play(
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1)
+      GameLogic.getMatchfieldOutput(players, currentMatchField).toString() should be ("------- Connect Four  -------\n| Max Mustermann : x\n| Erika Mustermann : o\n--------------------------\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(x, o, x, o, x, o, x)\n---------------------------\n      |1| 2| 3| 4| 5| 6| 7|")
+    }
+
     "return the last free row for token" in {
       val column = 0
       val round1Result = GameLogic.setChip(initialRoundModel)
