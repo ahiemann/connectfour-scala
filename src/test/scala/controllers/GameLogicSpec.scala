@@ -1,237 +1,211 @@
 package controllers
 
+import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
+import dsl.GameColumnImplicit.GameColumn
 import model.{MatchfieldModel, PlayerModel, RoundModel}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.util.Success
+import scala.util.{Failure, Success}
 
 class GameLogicSpec extends AnyWordSpec with Matchers {
   "The GameLogic" should {
-    val gameLogic = new GameLogic()
-    val initialField = gameLogic.getInitialMatchField()
+    val initialField = GameLogic.getInitialMatchField()
     val player1 = PlayerModel("Max Mustermann", 'x')
     val player2 = PlayerModel("Erika Mustermann", 'o')
+    val player3 = PlayerModel("Hans Peter", 'o')
     val noPlayerPlayer = PlayerModel("NoPlayer", '-')
     val initialRoundModel = Success(RoundModel(0, initialField, player1))
 
 
     "return an initial match field" in {
-      gameLogic.getInitialMatchField().toString should be("MatchfieldModel(Vector(Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      GameLogic.getInitialMatchField().toString should be("MatchfieldModel(Vector(Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
     }
 
     "return an Some(MatchfieldModel(...)) with one token" in {
-      gameLogic.setChip(initialRoundModel).get.matchField.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      GameLogic.setChip(initialRoundModel).get.matchField.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
     }
 
     "return the next free row for token" in {
       val column = 0
-      gameLogic.getNextEmptyRow(column, initialField) should be (Some(0))
-      val round1Result = gameLogic.setChip(initialRoundModel)
-      val round2Result = gameLogic.setChip(round1Result)
-      val round2Field = round2Result.get.matchField
-      gameLogic.getNextEmptyRow(column, round2Field) should be (Some(2))
+      GameLogic.getNextEmptyRow(column, initialField) should be (Some(0))
+
+      val round2Field = initialField.play(
+        0 -> player1,
+        0 -> player2
+      )
+
+      GameLogic.getNextEmptyRow(column, round2Field) should be (Some(2))
     }
 
     "return None if the column where the token should be placed is full" in {
-      val fullColumn1 = Vector[Vector[PlayerModel]](
-        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
-        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
-        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
-        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
-        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
-        Vector(player1, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
+      val fullColumnMatchfield = initialField.play(
+        0 -> player1, 0 -> player2,
+        0 -> player1, 0 -> player2,
+        0 -> player1, 0 -> player2
       )
-      val matchfield = MatchfieldModel(fullColumn1)
-      gameLogic.getNextEmptyRow(0, matchfield) should be (None)
+
+      GameLogic.getNextEmptyRow(0, fullColumnMatchfield) should be (None)
     }
 
     "should fail if the column where the token should be placed is outside of the range 0 to 5" in {
-       an [Exception] should be thrownBy gameLogic.getNextEmptyRow(10, initialField)
+       an [Exception] should be thrownBy GameLogic.getNextEmptyRow(10, initialField)
+    }
+
+    "return a new Player with Name and sign" in {
+      GameLogic.getInitialPlayerModel("Pascal", 'x').name should be ("Pascal")
+    }
+
+    "return with an empty list the value false" in {
+      GameLogic.checkIfSomeoneWon(initialField, player1) should be (false)
+    }
+
+    "return an string output from matchfield" in {
+      val players = Vector[PlayerModel](player1, player2)
+      val currentMatchField = initialField.play(
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1)
+      GameLogic.getMatchfieldOutput(players, currentMatchField).toString() should be ("------- Connect Four  -------\n| Max Mustermann : x\n| Erika Mustermann : o\n--------------------------\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(x, o, x, o, x, o, x)\n---------------------------\n      |1| 2| 3| 4| 5| 6| 7|")
     }
 
     "return the last free row for token" in {
       val column = 0
-      val round1Result = gameLogic.setChip(initialRoundModel)
-      val round2Result = gameLogic.setChip(round1Result)
-      val round3Result = gameLogic.setChip(round2Result)
-      val round4Result = gameLogic.setChip(round3Result)
-      val round5Result = gameLogic.setChip(round4Result)
+      val round1Result = GameLogic.setChip(initialRoundModel)
+      val round2Result = GameLogic.setChip(round1Result)
+      val round3Result = GameLogic.setChip(round2Result)
+      val round4Result = GameLogic.setChip(round3Result)
+      val round5Result = GameLogic.setChip(round4Result)
 
-      val round5matchField = round5Result.get.matchField
-      gameLogic.getNextEmptyRow(column, round5matchField) should be (Some(5))
+      val round5matchField = initialField.play(
+        0 -> player1, 0 -> player2,
+        0 -> player1,  0 -> player2,
+        0 -> player1
+      )
+      GameLogic.getNextEmptyRow(column, round5matchField) should be (Some(5))
     }
 
     "return true if the game is draw" in {
-      val drawMatrix = Vector[Vector[PlayerModel]](
-        Vector(player1, player2, player1, player2, player1, player2, player1),
-        Vector(player2, player1, player2, player1, player2, player1, player2),
-        Vector(player1, player2, player1, player2, player1, player2, player1),
-        Vector(player2, player1, player2, player1, player2, player1, player2),
-        Vector(player1, player2, player1, player2, player1, player2, player1),
-        Vector(player2, player1, player2, player1, player2, player1, player2)
-      )
-      val drawMatchField = MatchfieldModel[PlayerModel](drawMatrix)
 
-      gameLogic.checkIfDraw(drawMatchField) should be (true)
+      val drawMatchField = initialField.play(
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
+      )
+
+      GameLogic.checkIfDraw(drawMatchField) should be (true)
     }
 
     "return false if the game is not a draw" in {
-      val notDrawMatrix = Vector[Vector[PlayerModel]](
-        Vector(noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer, noPlayerPlayer),
-        Vector(player2, player1, player2, player1, player2, player1, player2),
-        Vector(player1, player2, player1, player2, player1, player2, player1),
-        Vector(player2, player1, player2, player1, player2, player1, player2),
-        Vector(player1, player2, player1, player2, player1, player2, player1),
-        Vector(player2, player1, player2, player1, player2, player1, player2)
+      val notDrawMatchField = initialField.play(
+        0 -> noPlayerPlayer, 1 -> noPlayerPlayer, 2 -> noPlayerPlayer, 3 -> noPlayerPlayer, 4 -> noPlayerPlayer, 5 -> noPlayerPlayer, 6 -> noPlayerPlayer,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
       )
-      val notDrawMatchField = MatchfieldModel[PlayerModel](notDrawMatrix)
 
-      gameLogic.checkIfDraw(notDrawMatchField) should be (false)
+      GameLogic.checkIfDraw(notDrawMatchField) should be (false)
+    }
+
+    "return a Success(Some(false)) if the game is over because it's a draw" in {
+      val drawMatchField = initialField.play(
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
+        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
+      )
+
+      GameLogic.checkIfGameIsOver(Success(RoundModel(0, drawMatchField, player1))) should be (Success(Some(false)))
+    }
+
+    "return a Success(Some(true)) if the game is over because a player won" in {
+      val winnerMatchfield = initialField.play(
+        0 -> player1, 1 -> player1, 2 -> player1, 3 -> player1, 4 -> player1, 5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player2, 2 -> player2, 3 -> player2, 4 -> player2, 5 -> player1, 6 -> player2,
+        0 -> player2,
+        0 -> player2,
+        0 -> player2
+      )
+
+      GameLogic.checkIfGameIsOver(Success(RoundModel(0, winnerMatchfield, player1))) should be (Success(Some(true)))
+    }
+
+    "return a Success(None) if the game continues" in {
+      val gameNotOverMatchfield = initialField.play(
+        0-> player2, 1 -> player1
+      )
+
+      GameLogic.checkIfGameIsOver(Success(RoundModel(0, gameNotOverMatchfield, player1))) should be (Success(None))
+    }
+
+    "return a Failure if the input for checkIfGameIsOver already was a failure" in {
+      an [Exception] should be thrownBy GameLogic.checkIfGameIsOver(Failure(new Exception("Not relevant"))).get
     }
 
     "return the number of successively tokens diagonal" in {
-      val round1Result = gameLogic.setChip(initialRoundModel)
-      val round1MatchField = round1Result.get.matchField
+      val finalMatchField = initialField.play(
+        0 -> player1,
+        1 -> player1, 1 -> player1,
+        2 -> player1, 2 -> player1, 2 -> player1,
+        3 -> player3, 3 -> player1, 3 -> player1, 3 -> player1
+      )
 
-      val round2Result = gameLogic.setChip(Success(RoundModel(1, round1MatchField, player1)))
-      val round2MatchField = round2Result.get.matchField
-
-      val round3Result = gameLogic.setChip(Success(RoundModel(1, round2MatchField, player1)))
-      val round3MatchField = round3Result.get.matchField
-
-      val round4Result = gameLogic.setChip(Success(RoundModel(2, round3MatchField, player1)))
-      val round4MatchField = round4Result.get.matchField
-
-      val round5Result = gameLogic.setChip(Success(RoundModel(2, round4MatchField, player1)))
-      val round5MatchField = round5Result.get.matchField
-
-      val round6Result = gameLogic.setChip(Success(RoundModel(2, round5MatchField, player1)))
-      val round6MatchField = round6Result.get.matchField
-
-      val round7Result = gameLogic.setChip(Success(RoundModel(3, round6MatchField, PlayerModel("Hans Peter", 'o'))))
-      val round7MatchField = round7Result.get.matchField
-
-      val round8Result = gameLogic.setChip(Success(RoundModel(3, round7MatchField, player1)))
-      val round8MatchField = round8Result.get.matchField
-
-      val round9Result = gameLogic.setChip(Success(RoundModel(3, round8MatchField, player1)))
-      val round9MatchField = round9Result.get.matchField
-
-      val round10Result = gameLogic.setChip(Success(RoundModel(3, round9MatchField, player1)))
-      val round10MatchField = round10Result.get.matchField
-
-      gameLogic.countDiagonal(6,0,0,"",0,0, round10MatchField.rows.map(_.map(_.name))) should be (3)
+      GameLogic.countDiagonal(6,0,0,"",0,0, finalMatchField.rows.map(_.map(_.name))) should be (3)
     }
 
     "return the boolean of successively tokens diagonal" in{
-      val round1Result = gameLogic.setChip(initialRoundModel)
-      val round1MatchField = round1Result.get.matchField
+      val finalMatchField = initialField.play(
+        0 -> player1,
+        1 -> player1, 1 -> player1,
+        2 -> player1, 2 -> player1, 2 -> player1,
+        3 -> player3, 3 -> player1, 3 -> player1, 3 -> player1
+      )
 
-      val round2Result = gameLogic.setChip(Success(RoundModel(1, round1MatchField, player1)))
-      val round2MatchField = round2Result.get.matchField
-
-      val round3Result = gameLogic.setChip(Success(RoundModel(1, round2MatchField, player1)))
-      val round3MatchField = round3Result.get.matchField
-
-      val round4Result = gameLogic.setChip(Success(RoundModel(2, round3MatchField, player1)))
-      val round4MatchField = round4Result.get.matchField
-
-      val round5Result = gameLogic.setChip(Success(RoundModel(2, round4MatchField, player1)))
-      val round5MatchField = round5Result.get.matchField
-
-      val round6Result = gameLogic.setChip(Success(RoundModel(2, round5MatchField, player1)))
-      val round6MatchField = round6Result.get.matchField
-
-      val round7Result = gameLogic.setChip(Success(RoundModel(3, round6MatchField, PlayerModel("Hans Peter", 'o'))))
-      val round7MatchField = round7Result.get.matchField
-
-      val round8Result = gameLogic.setChip(Success(RoundModel(3, round7MatchField, player1)))
-      val round8MatchField = round8Result.get.matchField
-
-      val round9Result = gameLogic.setChip(Success(RoundModel(3, round8MatchField, player1)))
-      val round9MatchField = round9Result.get.matchField
-
-      val round10Result = gameLogic.setChip(Success(RoundModel(3, round9MatchField, player1)))
-      val round10MatchField = round10Result.get.matchField
-
-      gameLogic.checkIfSomeoneWon(round10MatchField, player1) should be (true)
+      GameLogic.checkIfSomeoneWon(finalMatchField, player1) should be (true)
     }
 
     "return true if player won with 4 tokens horizontal" in {
-      val round1Result = gameLogic.setChip(initialRoundModel)
-      val round1MatchField = round1Result.get.matchField
+      val finalMatchField = initialField.play(
+        0 -> player1, 1 -> player1, 2 -> player1, 3 -> player1,
+      )
 
-      val round2Result = gameLogic.setChip(Success(RoundModel(1, round1MatchField, player1)))
-      val round2MatchField = round2Result.get.matchField
-
-      val round3Result = gameLogic.setChip(Success(RoundModel(2, round2MatchField, player1)))
-      val round3MatchField = round3Result.get.matchField
-
-      val round4Result = gameLogic.setChip(Success(RoundModel(3, round3MatchField, player1)))
-      val round4MatchField = round4Result.get.matchField
-
-      gameLogic.checkIfSomeoneWon(round4MatchField, player1) should be (true)
+      GameLogic.checkIfSomeoneWon(finalMatchField, player1) should be (true)
     }
 
     "return true if player won with 4 tokens vertical" in {
-      val round1Result = gameLogic.setChip(initialRoundModel)
-      val round1MatchField = round1Result.get.matchField
+      val finalMatchField = initialField.play(
+        0 -> player1,
+        0 -> player1,
+        0 -> player1,
+        0 -> player1
+      )
 
-      val round2Result = gameLogic.setChip(Success(RoundModel(0, round1MatchField, player1)))
-      val round2MatchField = round2Result.get.matchField
-
-      val round3Result = gameLogic.setChip(Success(RoundModel(0, round2MatchField, player1)))
-      val round3MatchField = round3Result.get.matchField
-
-      val round4Result = gameLogic.setChip(Success(RoundModel(0, round3MatchField, player1)))
-      val round4MatchField = round4Result.get.matchField
-
-      gameLogic.checkIfSomeoneWon(round4MatchField, player1) should be (true)
+      GameLogic.checkIfSomeoneWon(finalMatchField, player1) should be (true)
     }
 
     "return true if 4 tokens are vertical from position 0|0 -> 3|3"  in {
-      val round1Result = gameLogic.setChip(initialRoundModel)
-      val round1MatchField = round1Result.get.matchField
+      val finalMatchField = initialField.play(
+        0 -> player1,
+        1 -> player1, 1 -> player1,
+        2 -> player1, 2 -> player1, 2 -> player1,
+        3 -> player3, 3 -> player1, 3 -> player1, 3 -> player1
+      )
 
-      val round2Result = gameLogic.setChip(Success(RoundModel(1, round1MatchField, player1)))
-      val round2MatchField = round2Result.get.matchField
-
-      val round3Result = gameLogic.setChip(Success(RoundModel(1, round2MatchField, player1)))
-      val round3MatchField = round3Result.get.matchField
-
-      val round4Result = gameLogic.setChip(Success(RoundModel(2, round3MatchField, player1)))
-      val round4MatchField = round4Result.get.matchField
-
-      val round5Result = gameLogic.setChip(Success(RoundModel(2, round4MatchField, player1)))
-      val round5MatchField = round5Result.get.matchField
-
-      val round6Result = gameLogic.setChip(Success(RoundModel(2, round5MatchField, player1)))
-      val round6MatchField = round6Result.get.matchField
-
-      val round7Result = gameLogic.setChip(Success(RoundModel(3, round6MatchField, PlayerModel("Hans Peter", 'o'))))
-      val round7MatchField = round7Result.get.matchField
-
-      val round8Result = gameLogic.setChip(Success(RoundModel(3, round7MatchField, player1)))
-      val round8MatchField = round8Result.get.matchField
-
-      val round9Result = gameLogic.setChip(Success(RoundModel(3, round8MatchField, player1)))
-      val round9MatchField = round9Result.get.matchField
-
-      val round10Result = gameLogic.setChip(Success(RoundModel(3, round9MatchField, player1)))
-      val round10MatchField = round10Result.get.matchField
-
-      gameLogic.countDiagonal(6,0,0,"",0,0, round10MatchField.rows.map(_.map(_.name))) should be (3)
+      GameLogic.countDiagonal(6,0,0,"",0,0, finalMatchField.rows.map(_.map(_.name))) should be (3)
     }
 
-    "return the boolean of unsuccessively tokens diagonal" in{
-      val round1Result = gameLogic.setChip(initialRoundModel)
-      val round1MatchField = round1Result.get.matchField
+    "return the boolean of unsuccessively tokens diagonal" in {
+      val finalMatchField = initialField.play(
+        1 -> player1,
+        2 -> player1
+      )
 
-      val round2Result = gameLogic.setChip(Success(RoundModel(1, round1MatchField, player1)))
-      val round2MatchField = round2Result.get.matchField
-
-      gameLogic.checkIfSomeoneWon(round2MatchField, player1) should be (false)
+      GameLogic.checkIfSomeoneWon(finalMatchField, player1) should be (false)
     }
   }
 }
