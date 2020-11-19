@@ -2,7 +2,7 @@ package controllers
 
 import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
-import model.{MatchfieldModel, PlayerModel, RoundModel, RoundResultGameOver, RoundResultMoveOk}
+import model.{PlayerModel, RoundModel, RoundResultGameOver, RoundResultMoveOk}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -77,7 +77,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       val players = Vector[PlayerModel](player1, player2)
       val currentMatchField = initialField.play(
         0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1)
-      GameLogic.getMatchfieldOutput(players, currentMatchField).toString() should be ("------- Connect Four  -------\n| Max Mustermann : x\n| Erika Mustermann : o\n--------------------------\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(x, o, x, o, x, o, x)\n---------------------------\n      |1| 2| 3| 4| 5| 6| 7|")
+      GameLogic.getMatchfieldOutput(players, currentMatchField) should be ("------- Connect Four  -------\n| Max Mustermann : x\n| Erika Mustermann : o\n--------------------------\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(x, o, x, o, x, o, x)\n---------------------------\n      |1| 2| 3| 4| 5| 6| 7|")
     }
 
     "return the last free row for token" in {
@@ -146,7 +146,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
         0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
       )
 
-      (GameLogic.checkIfGameIsOver(Success(RoundModel(0, drawMatchField, player1)))).get.get should be ("The game is over, drawn.")
+      GameLogic.checkIfGameIsOver(Success(RoundModel(0, drawMatchField, player1))).get.get should be ("The game is over, drawn.")
     }
 
     "return a string that mentions which player has won if that's the case" in {
@@ -160,7 +160,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
         6 -> player2, 0 -> player2
       )
 
-      (GameLogic.checkIfGameIsOver(Success(RoundModel(0, winnerMatchfield, player1)))).get.get should be (s"Player ${player1.name} has won the game!")
+      GameLogic.checkIfGameIsOver(Success(RoundModel(0, winnerMatchfield, player1))).get.get should be (s"Player ${player1.name} has won the game!")
     }
 
     "return a Success(None) if the game continues" in {
