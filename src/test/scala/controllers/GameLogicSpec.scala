@@ -2,7 +2,7 @@ package controllers
 
 import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
-import model.{MatchfieldModel, PlayerModel, RoundModel}
+import model.{MatchfieldModel, PlayerModel, RoundModel, RoundResultGameOver, RoundResultMoveOk}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -24,6 +24,15 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
     "return an Some(MatchfieldModel(...)) with one token" in {
       GameLogic.setChip(initialRoundModel).get.matchField.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+    }
+
+    "return a Failure if the target column was already full" in {
+      val columnFullField = initialField.play(0 -> player1, 0 -> player2, 0 -> player1, 0 -> player2,0 -> player1, 0 -> player2)
+      an [Exception] should be thrownBy GameLogic.setChip(Success(RoundModel(0, columnFullField, player1))).get
+    }
+
+    "return a Failure if the incoming Try[RoundResult] already was a Failure" in {
+      an [Exception] should be thrownBy GameLogic.setChip(Failure(new Exception("Nevermind"))).get
     }
 
     "return the next free row for token" in {
@@ -69,11 +78,6 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
     "return the last free row for token" in {
       val column = 0
-      val round1Result = GameLogic.setChip(initialRoundModel)
-      val round2Result = GameLogic.setChip(round1Result)
-      val round3Result = GameLogic.setChip(round2Result)
-      val round4Result = GameLogic.setChip(round3Result)
-      val round5Result = GameLogic.setChip(round4Result)
 
       val round5matchField = initialField.play(
         0 -> player1, 0 -> player2,
@@ -81,6 +85,24 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
         0 -> player1
       )
       GameLogic.getNextEmptyRow(column, round5matchField) should be (Some(5))
+    }
+
+    "return a Success that contains a RoundResultGameOver if the game is over for some reason" in {
+      val matchfieldWithWinner = initialField.play(0 -> player1, 1 -> player1, 2 -> player1)
+      GameLogic.playRound(Success(RoundModel(3, matchfieldWithWinner, player1))).get shouldBe a [RoundResultGameOver]
+    }
+
+    "return a Success with the value None if the game is not over yet" in {
+      GameLogic.playRound(Success(RoundModel(0, initialField, player1))).get shouldBe a [RoundResultMoveOk]
+    }
+
+    "return a Failure if there was a failure while playing a round (i.e. setting the chip and checking if the game is over)" in {
+      val fullColumnField = initialField.play(0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1)
+      an [Exception] should be thrownBy GameLogic.playRound(Success(RoundModel(0, fullColumnField, player2))).get
+    }
+
+    "return a Failure if the incoming Try[RoundModel] already was a failure" in {
+      an [Exception] should be thrownBy GameLogic.playRound(Failure(new Exception("Nevermind"))).get
     }
 
     "return true if the game is draw" in {
@@ -110,7 +132,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       GameLogic.checkIfDraw(notDrawMatchField) should be (false)
     }
 
-    "return a Success(Some(false)) if the game is over because it's a draw" in {
+    "return a 'The game is over, drawn' if that's the case" in {
       val drawMatchField = initialField.play(
         0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
         0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
@@ -120,19 +142,21 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
         0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
       )
 
-      GameLogic.checkIfGameIsOver(Success(RoundModel(0, drawMatchField, player1))) should be (Success(Some(false)))
+      (GameLogic.checkIfGameIsOver(Success(RoundModel(0, drawMatchField, player1)))).get.get should be ("The game is over, drawn.")
     }
 
-    "return a Success(Some(true)) if the game is over because a player won" in {
+    "return a string that mentions which player has won if that's the case" in {
       val winnerMatchfield = initialField.play(
-        0 -> player1, 1 -> player1, 2 -> player1, 3 -> player1, 4 -> player1, 5 -> player2, 6 -> player1,
-        0 -> player2, 1 -> player2, 2 -> player2, 3 -> player2, 4 -> player2, 5 -> player1, 6 -> player2,
-        0 -> player2,
-        0 -> player2,
-        0 -> player2
+        0 -> player1,
+        1 -> player1, 2 -> player1, 3 -> player1, 4 -> player1,
+        5 -> player2, 6 -> player1,
+        0 -> player2, 1 -> player2,
+        2 -> player2, 3 -> player2,
+        4 -> player2, 5 -> player1,
+        6 -> player2, 0 -> player2
       )
 
-      GameLogic.checkIfGameIsOver(Success(RoundModel(0, winnerMatchfield, player1))) should be (Success(Some(true)))
+      (GameLogic.checkIfGameIsOver(Success(RoundModel(0, winnerMatchfield, player1)))).get.get should be (s"Player ${player1.name} has won the game!")
     }
 
     "return a Success(None) if the game continues" in {
@@ -207,5 +231,6 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
       GameLogic.checkIfSomeoneWon(finalMatchField, player1) should be (false)
     }
+
   }
 }

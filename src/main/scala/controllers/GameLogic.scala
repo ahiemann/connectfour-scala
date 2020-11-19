@@ -1,12 +1,24 @@
 package controllers
 
-import model.{MatchfieldModel, PlayerModel, RoundModel}
+import model.{MatchfieldModel, PlayerModel, RoundModel, RoundResult, RoundResultGameOver, RoundResultMoveOk}
 
 import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.{Failure, Success, Try}
 
 object GameLogic {
+
+  def playRound(roundData: Try[RoundModel]):Try[RoundResult] = roundData match {
+    case Success(r) =>
+      val setChipResult = GameLogic.setChip(roundData)
+      checkIfGameIsOver(setChipResult) match {
+        case Success(Some(gameOverMessage)) => Success(RoundResultGameOver(setChipResult.get.matchField, gameOverMessage))
+        case Success(None) => Success(RoundResultMoveOk(setChipResult.get.matchField))
+        case Failure(e) => Failure(e)
+      }
+    case Failure(e) => Failure(e)
+  }
+
   /**
     * Check if a player has 4 chips in one row, column or diagonal
     *
@@ -132,16 +144,16 @@ object GameLogic {
     case Failure(roundData) => Failure(roundData)
   }
 
-  def checkIfGameIsOver(roundData : Try[RoundModel]) : Try[Option[Boolean]] = roundData match {
+  def checkIfGameIsOver(roundData : Try[RoundModel]) : Try[Option[String]] = roundData match {
     case Success(roundData) =>
       val matchField = roundData.matchField
       val player = roundData.player
 
       if (checkIfDraw(matchField)) {
-        Success(Some(false))
+        Success(Some("The game is over, drawn."))
       }
       else if (checkIfSomeoneWon(matchField, player)) {
-        Success(Some(true))
+        Success(Some(s"Player ${roundData.player.name} has won the game!"))
       }
       else {
         Success(None)
