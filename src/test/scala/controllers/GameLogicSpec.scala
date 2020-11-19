@@ -35,6 +35,10 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       an [Exception] should be thrownBy GameLogic.setChip(Failure(new Exception("Nevermind"))).get
     }
 
+    "return a failure if a invalid column to insert the chip was selected" in {
+      an [Exception] should be thrownBy GameLogic.setChip(Success(RoundModel(42, initialField, player1))).get
+    }
+
     "return the next free row for token" in {
       val column = 0
       GameLogic.getNextEmptyRow(column, initialField) should be (Some(0))
