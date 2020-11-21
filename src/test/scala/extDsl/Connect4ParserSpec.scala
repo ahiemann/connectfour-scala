@@ -3,11 +3,37 @@ package extDsl
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import extDsl.Connect4Parser
+import model.Connect4Model
 import org.scalactic.ErrorMessage
 
 class Connect4ParserSpec extends AnyWordSpec with Matchers {
 
-  val parser: Connect4Parser = new Connect4Parser()
+  "A Connect4Parser" should {
+    val parser = new Connect4Parser()
+
+    val validDslExample = """Player 1 has name Tom and symbol x
+                       |Player 2 has name Max and symbol o
+                       |Set chip for player 1 in column 1
+                       |Set chip for player 2 in column 1
+                       |Set chip for player 1 in column 2""".stripMargin
+
+    val invalidDslExample = """Let Player1 win directly!"""
+
+    "return the expected instance of the model for a valid input text" in {
+      parser.parseConnect4Dsl(validDslExample).getOrElse("Did not work") shouldBe a [Connect4Model]
+    }
+
+    "return an error string for an invalid input text" in {
+      parser.parseConnect4Dsl(invalidDslExample).getOrElse("Did not work") shouldBe a [String]
+    }
+
+  }
+
+
+
+
+
+/*
   val playerDslExample =
     """
       | Player 1 has a name Pascal
@@ -56,6 +82,6 @@ class Connect4ParserSpec extends AnyWordSpec with Matchers {
     }
   }
 
-
+*/
 
 }
