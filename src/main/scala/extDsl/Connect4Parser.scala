@@ -2,7 +2,7 @@ package extDsl
 
 import dsl.GameColumnPlayerMapping
 import scala.language.postfixOps
-import model.{Connect4Model, PlayerModel, RoundModel}
+import model.{Connect4Model, PlayerModel}
 
 import scala.util.parsing.combinator.RegexParsers
 
@@ -38,19 +38,62 @@ class Connect4Parser extends RegexParsers {
         PlayerModel(n, s)
     }
 
-  private def rounds: Parser[List[(Int, Int)]] = rep(round | roundCompact)
+  private def rounds: Parser[List[(Int, Int)]] = roundsPlayer1First ||| roundsPlayer2First
 
-  private def round: Parser[(Int, Int)] =
-    "Set chip for player" ~ playerNumber ~
-      "in column" ~ columnNumber ^^ {
-      case _ ~ playerNr ~ _ ~ columnNr => (playerNr, columnNr)
+  //private def rounds: Parser[List[(Int, Int)]] = (rep(player2First) | rep(player1First)) ^^ (roundData => roundData.flatten)
+  private def roundsPlayer1First: Parser[List[(Int, Int)]] =
+    rep(player1First) ~ opt(player1Round | player1RoundCompact) ^^ {
+      case ps ~ Some(p) => ps.flatten.appended(p)
+      case ps ~ None => ps.flatten
     }
 
-  private def roundCompact: Parser[(Int, Int)] =
-    "p" ~ playerNumber ~
+  private def roundsPlayer2First: Parser[List[(Int, Int)]] =
+    rep(player2First) ~ opt(player2Round | player2RoundCompact) ^^ {
+      case ps ~ Some(p) => ps.flatten.appended(p)
+      case ps ~ None => ps.flatten
+    }
+
+/*
+  private def roundOrder(firstPlayerRound: Parser[(Int, Int)], secondPlayerRound: Parser[(Int, Int)]) : Parser[List[(Int, Int)]] =
+    firstPlayerRound ~ secondPlayerRound ^^ {
+      case first ~ second => List[(Int, Int)](first, second)
+    }
+*/
+
+  private def player1First : Parser[List[(Int, Int)]] =
+    (player1Round | player1RoundCompact) ~ (player2Round | player2RoundCompact) ^^ {
+      case p1round ~ p2round => List[(Int, Int)](p1round, p2round)
+    }
+
+  private def player2First : Parser[List[(Int, Int)]] =
+    (player2Round | player2RoundCompact) ~ (player1Round | player1RoundCompact) ^^ {
+      case p2round ~ p1round => List[(Int, Int)](p2round, p1round)
+    }
+
+  private def player1Round : Parser[(Int, Int)] =
+    "Set" ~
+      "chip" ~
+      "for" ~
+      "player" ~ "1" ~ "in" ~ "column" ~ columnNumber ^^ { case _ ~ _ ~ _ ~ _ ~ _ ~ _ ~ _ ~ columnNr => (1, columnNr) }
+
+  private def player2Round : Parser[(Int, Int)] =
+    "Set" ~
+      "chip" ~
+      "for" ~
+      "player" ~ "2" ~ "in" ~ "column" ~ columnNumber ^^ { case _ ~ _ ~ _ ~ _ ~ _ ~ _ ~ _ ~ columnNr => (2, columnNr) }
+
+  private def player1RoundCompact : Parser[(Int, Int)] =
+    "p" ~ "1" ~
       ":" ~
       "c" ~ columnNumber ^^ {
-      case _ ~ playerNr ~ _ ~ _ ~ columnNr => (playerNr, columnNr)
+      case _ ~ _ ~ _ ~ _ ~ columnNr => (1, columnNr)
+    }
+
+  private def player2RoundCompact : Parser[(Int, Int)] =
+    "p" ~ "2" ~
+      ":" ~
+      "c" ~ columnNumber ^^ {
+      case _ ~ _ ~ _ ~ _ ~ columnNr => (2, columnNr)
     }
 
   private def name: Parser[String] = word
@@ -64,4 +107,5 @@ class Connect4Parser extends RegexParsers {
 
   //matches a number in the range 1-7, corresponding to the number of columns in Connect Four
   private def columnNumber: Parser[Int] = """[1-7]""".r ^^ (_.toInt)
+
 }
