@@ -11,7 +11,7 @@ class Connect4Parser extends RegexParsers {
   def parseConnect4Dsl(input: String): Either[String, Connect4Model] =
     parseAll(connect4Parser, input) match {
       case Success(t,_) => Right(t)
-      case NoSuccess(msg,_)=>
+      case NoSuccess(msg,_) =>
         Left(s"Failed parsing: $msg")
     }
 
@@ -38,12 +38,19 @@ class Connect4Parser extends RegexParsers {
         PlayerModel(n, s)
     }
 
-  private def rounds: Parser[List[(Int, Int)]] = round*
+  private def rounds: Parser[List[(Int, Int)]] = rep(round | roundCompact)
 
   private def round: Parser[(Int, Int)] =
     "Set chip for player" ~ playerNumber ~
       "in column" ~ columnNumber ^^ {
       case _ ~ playerNr ~ _ ~ columnNr => (playerNr, columnNr)
+    }
+
+  private def roundCompact: Parser[(Int, Int)] =
+    "p" ~ playerNumber ~
+      ":" ~
+      "c" ~ columnNumber ^^ {
+      case _ ~ playerNr ~ _ ~ _ ~ columnNr => (playerNr, columnNr)
     }
 
   private def name: Parser[String] = word

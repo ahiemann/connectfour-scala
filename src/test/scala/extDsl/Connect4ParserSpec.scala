@@ -11,20 +11,31 @@ class Connect4ParserSpec extends AnyWordSpec with Matchers {
   "A Connect4Parser" should {
     val parser = new Connect4Parser()
 
-    val validDslExample = """Player 1 has name Tom and symbol x
-                       |Player 2 has name Max and symbol o
+    val validDslExample = """Player 1 has name Pascal and symbol x
+                       |Player 2 has name Andreas and symbol o
                        |Set chip for player 1 in column 1
                        |Set chip for player 2 in column 1
                        |Set chip for player 1 in column 2""".stripMargin
 
-    val invalidDslExample = """Let Player1 win directly!"""
+    val invalidDslExample = "Let Player 1 win directly!"
 
     "return the expected instance of the model for a valid input text" in {
-      parser.parseConnect4Dsl(validDslExample).getOrElse("Did not work") shouldBe a [Connect4Model]
+      parser.parseConnect4Dsl(validDslExample).fold(l => l, r => r) shouldBe a [Connect4Model]
     }
 
     "return an error string for an invalid input text" in {
-      parser.parseConnect4Dsl(invalidDslExample).getOrElse("Did not work") shouldBe a [String]
+      parser.parseConnect4Dsl(invalidDslExample).fold(l => l, r => r) shouldBe a [String]
+    }
+
+    "also recognize given round data when it was written in a compact definition" in {
+      val validWithCompactRounds = """
+          |Player 1 has name Pascal and symbol x
+          |Player 2 has name Andreas and symbol o
+          |p1 : c1
+          |p2 : c2
+          |""".stripMargin
+
+      parser.parseConnect4Dsl(validWithCompactRounds).fold(l => l, r => r) shouldBe a [Connect4Model]
     }
 
   }
