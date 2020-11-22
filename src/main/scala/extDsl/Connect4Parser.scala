@@ -38,17 +38,10 @@ class Connect4Parser extends RegexParsers {
         PlayerModel(n, s)
     }
 
-  private def rounds: Parser[List[(Int, Int)]] = roundsPlayer1First | roundsPlayer2First | oneOrNoRound
+  private def rounds: Parser[List[(Int, Int)]] = multipleRounds | oneOrNoRound
 
-
-  private def roundsPlayer1First: Parser[List[(Int, Int)]] =
-    rep1(player1First) ~ opt(player1Round) ^^ {
-      case playerRounds ~ Some(optionalPlayerRound) => playerRounds.flatten.appended(optionalPlayerRound)
-      case playerRounds ~ None => playerRounds.flatten
-    }
-
-  private def roundsPlayer2First: Parser[List[(Int, Int)]] =
-    rep1(player2First) ~ opt(player2Round) ^^ {
+  private def multipleRounds: Parser[List[(Int, Int)]] =
+    (rep1(player1First) ~ opt(player1Round) | rep1(player2First) ~ opt(player2Round)) ^^ {
       case playerRounds ~ Some(optionalPlayerRound) => playerRounds.flatten.appended(optionalPlayerRound)
       case playerRounds ~ None => playerRounds.flatten
     }
