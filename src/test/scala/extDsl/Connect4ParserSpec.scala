@@ -9,31 +9,43 @@ class Connect4ParserSpec extends AnyWordSpec with Matchers {
   "A Connect4Parser" should {
     val parser = new Connect4Parser()
 
-    val validDslExample = """Player 1 has name Pascal and symbol x
-                       |Player 2 has name Andreas and symbol o
-                       |Set chip for player 1 in column 1
-                       |Set chip for player 2 in column 1
-                       |Set chip for player 1 in column 5""".stripMargin
+    val playerHeader =
+      """Player 1 has name Pascal and symbol x
+        |Player 2 has name Andreas and symbol o
+        |""".stripMargin
 
-    val invalidDslExample = "Let Player 1 win directly!"
+
 
     "return the expected instance of the model for a valid input text" in {
+      val validDslExample = playerHeader + """
+                                             |Set chip for player 1 in column 1
+                                             |Set chip for player 2 in column 1
+                                             |Set chip for player 1 in column 5""".stripMargin
       parser.parseConnect4Dsl(validDslExample).fold(l => l, r => r) shouldBe a [Connect4Model]
     }
 
     "return an error string for an invalid input text" in {
+      val invalidDslExample = "Let Player 1 win directly!"
       parser.parseConnect4Dsl(invalidDslExample).fold(l => l, r => r) shouldBe a [String]
     }
 
     "also accept input with no round data" in {
-      val onlyPlayers =
-        """
-          |Player 1 has name Pascal and symbol x
-          |Player 2 has name Andreas and symbol o
-          |""".stripMargin
-          parser.parseConnect4Dsl(onlyPlayers).fold(l => l, r => r) shouldBe a [Connect4Model]
+      parser.parseConnect4Dsl(playerHeader).fold(l => l, r => r) shouldBe a [Connect4Model]
     }
 
+    "accept a definition of one round for player 1 only" in {
+      val onlyPlayer1Round = playerHeader + """
+          |Set chip for player 1 in column 2
+          |""".stripMargin
+      parser.parseConnect4Dsl(onlyPlayer1Round).fold(l => l, r => r) shouldBe a [Connect4Model]
+    }
+
+    "accept a definition of one round for player 2 only" in {
+      val onlyPlayer1Round = playerHeader + """
+                                              |Set chip for player 2 in column 2
+                                              |""".stripMargin
+      parser.parseConnect4Dsl(onlyPlayer1Round).fold(l => l, r => r) shouldBe a [Connect4Model]
+    }
 
     "also recognize given round data when it was written in a compact definition when player 1 starts" in {
       val validWithCompactRounds = """
