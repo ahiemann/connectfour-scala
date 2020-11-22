@@ -42,49 +42,42 @@ class Connect4Parser extends RegexParsers {
 
 
   private def roundsPlayer1First: Parser[List[(Int, Int)]] =
-    rep1(player1First) ~ optionalPlayer1Round ^^ {
-      case playerRounds ~ optionalPlayerRound => playerRounds.flatten ::: optionalPlayerRound
+    rep1(player1First) ~ opt(player1Round) ^^ {
+      case playerRounds ~ Some(optionalPlayerRound) => playerRounds.flatten.appended(optionalPlayerRound)
+      case playerRounds ~ None => playerRounds.flatten
     }
 
   private def roundsPlayer2First: Parser[List[(Int, Int)]] =
-    rep1(player2First) ~ optionalPlayer2Round ^^ {
-      case playerRounds ~ optionalPlayerRound => playerRounds.flatten ::: optionalPlayerRound
+    rep1(player2First) ~ opt(player2Round) ^^ {
+      case playerRounds ~ Some(optionalPlayerRound) => playerRounds.flatten.appended(optionalPlayerRound)
+      case playerRounds ~ None => playerRounds.flatten
     }
 
   private def player1First : Parser[List[(Int, Int)]] =
-    (player1Round | player1RoundCompact) ~ (player2Round | player2RoundCompact) ^^ {
+    player1Round ~ player2Round ^^ {
       case p1round ~ p2round => List[(Int, Int)](p1round, p2round)
     }
 
   private def player2First : Parser[List[(Int, Int)]] =
-    (player2Round | player2RoundCompact) ~ (player1Round | player1RoundCompact) ^^ {
+    player2Round ~ player1Round ^^ {
       case p2round ~ p1round => List[(Int, Int)](p2round, p1round)
     }
 
   private def oneOrNoRound: Parser[List[(Int, Int)]] =
-    opt(player1Round | player1RoundCompact | player2Round | player2RoundCompact) ^^ {
+    opt(player1Round | player2Round) ^^ {
       case Some(round) => List[(Int, Int)](round)
       case None => List[(Int, Int)]()
     }
 
-  private def optionalPlayer1Round: Parser[List[(Int, Int)]] =
-    opt(player1Round|player1RoundCompact) ^^ {
-      case Some(p1round) => List[(Int, Int)](p1round)
-      case None => List[(Int, Int)]()
-    }
+  private def player1Round : Parser[(Int, Int)] = player1RoundLong | player1RoundCompact
+  private def player2Round : Parser[(Int, Int)] = player2RoundLong | player2RoundCompact
 
-  private def optionalPlayer2Round: Parser[List[(Int, Int)]] =
-    opt(player2Round|player2RoundCompact) ^^ {
-      case Some(p2round) => List[(Int, Int)](p2round)
-      case None => List[(Int, Int)]()
-    }
-
-  private def player1Round : Parser[(Int, Int)] =
+  private def player1RoundLong : Parser[(Int, Int)] =
     "Set" ~
       "chip" ~
       "for" ~ "player" ~ "1" ~ "in" ~ "column" ~ columnNumber ^^ { case _ ~ _ ~ _ ~ _ ~ _ ~ _ ~ _ ~ columnNr => (1, columnNr) }
 
-  private def player2Round : Parser[(Int, Int)] =
+  private def player2RoundLong : Parser[(Int, Int)] =
     "Set" ~
       "chip" ~
       "for" ~ "player" ~ "2" ~ "in" ~ "column" ~ columnNumber ^^ { case _ ~ _ ~ _ ~ _ ~ _ ~ _ ~ _ ~ columnNr => (2, columnNr) }
