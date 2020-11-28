@@ -1,21 +1,33 @@
 package akka
 
-import akka.AI.Test
+import java.util.concurrent.TimeUnit
+
+import ai.mininmax.{MaxActor, RequestMessage}
 import akka.actor._
+import akka.pattern.ask
+import akka.util.Timeout
+import controllers.GameLogic
+import model.PlayerModel
 
-object AI extends App{
-  class Test extends Actor {
-    def receive = {
-      case s:String => println("Hello" + s)
-      case _      => println("Nope")
-    }
-  }
-  val system = ActorSystem("Root")
-  val actor = system.actorOf(Props[Test], "A")
+import scala.concurrent.Await
 
-  actor ! "Sfds"
-}
+
 
 object Main extends App {
-  val a = new Test
+  val system = ActorSystem("AISystem")
+  val actor = system.actorOf(Props[MaxActor], "MaxActor")
+
+  val playerAI = PlayerModel("Computer", 'X')
+  val playerHuman = PlayerModel("Human", 'O')
+  val matchfield = GameLogic.getInitialMatchField()
+
+
+  actor ! "Hallo Welt"
+  // actor ! 42
+  implicit val timeout: Timeout = Timeout(2, TimeUnit.SECONDS)
+  val future = actor ? RequestMessage(playerAI, playerHuman, matchfield, 0)
+
+
+  val result = Await.result(future, timeout.duration)
+  println(result)
 }
