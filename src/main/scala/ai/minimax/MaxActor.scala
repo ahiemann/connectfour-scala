@@ -1,4 +1,4 @@
-package ai.mininmax
+package ai.minimax
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.ask
@@ -11,7 +11,7 @@ import scala.util.Success
 
 class MaxActor extends MiniMaxActor {
   println("New MaxActor")
-  override def makeScoreChoice(choices: List[ResponseMessage]): Int = choices.map(e => e.score).max
+  override def makeScoreBasedChoice(choices: List[ResponseMessage]): ResponseMessage = choices.maxBy(_.score)
 
   override def getPlayer(aiPlayer: PlayerModel, otherPlayer: PlayerModel): PlayerModel = {
     aiPlayer
@@ -19,6 +19,6 @@ class MaxActor extends MiniMaxActor {
 
   override def spawnNewActor(columnNr: Int, matchField: MatchfieldModel[PlayerModel], aiPlayer: PlayerModel, otherPlayer: PlayerModel, depth: Int): Future[Any] = {
     val nextMatchfield = GameLogic.setChip(Success(RoundModel(columnNr, matchField, aiPlayer))).get.matchField
-    context.actorOf(Props[MinActor]) ? RequestMessage(aiPlayer, otherPlayer, nextMatchfield, depth)
+    context.actorOf(Props[MinActor]) ? RequestMessage(Some(columnNr), aiPlayer, otherPlayer, nextMatchfield, depth)
   }
 }

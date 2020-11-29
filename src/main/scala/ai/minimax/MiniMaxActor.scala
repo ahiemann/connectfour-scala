@@ -1,4 +1,4 @@
-package ai.mininmax
+package ai.minimax
 
 import java.util.concurrent.TimeUnit
 
@@ -18,38 +18,38 @@ trait MiniMaxActor extends Actor{
   implicit val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
 
   override def receive: Receive = {
+
     case requestMessage: RequestMessage =>
       val matchField = requestMessage.matchfield
       val aiPlayer = requestMessage.simulatedPlayer
       val otherPlayer = requestMessage.otherPlayer
       val depth = requestMessage.depth
+      val columnNr = requestMessage.columnNr
 
       checkAndEvaluate(matchField, aiPlayer, otherPlayer, depth) match {
-        case Some(i) => sender ! ResponseMessage(i)
+        case Some(score) => sender ! ResponseMessage(columnNr, score)
         case None =>
           // get number of columns in the matchfield which are not filled up yet
           val possibleColumns = List[Int](0, 1, 3) // TODO: Function in GameLogic to get a list of columns that aren't filled up yet
 
           // Create the matchfield for each option and pass each one to the next child, which for a MaxActor is a MinActor.
-          // When passing the
-          println("Received Request Message")
-
           implicit val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
-          val futures = for {columnNr <- possibleColumns
-                             future = spawnNewActor(columnNr, matchField, aiPlayer, otherPlayer, depth - 1)
-                             } yield(future)
+          val futures = for {
+            columnNr <- possibleColumns
+            future = spawnNewActor(columnNr, matchField, aiPlayer, otherPlayer, depth - 1)
+          } yield future
 
           val futureResults = for {
             future <- futures
             res = Await.result(future, timeout.duration)
-          } yield(res)
+          } yield res
 
-          val choice = makeScoreChoice(futureResults.asInstanceOf[List[ResponseMessage]])
-          sender ! ResponseMessage(choice)
+          val bestOption = makeScoreBasedChoice(futureResults.asInstanceOf[List[ResponseMessage]])
+          sender ! bestOption
       }
 
     // case responseMessage: ResponseMessage => context.parent ! responseMessage
-    case responseMessage: ResponseMessage => println("response message received")
+    case responseMessage: ResponseMessage => println("response message received")  // for now...
   }
 
   def checkAndEvaluate(matchfield:MatchfieldModel[PlayerModel], aiPlayer:PlayerModel, otherPlayer:PlayerModel, depth:Int):Option[Int] = {
@@ -62,7 +62,7 @@ trait MiniMaxActor extends Actor{
 
   def spawnNewActor(columnNr:Int, matchField:MatchfieldModel[PlayerModel], aiPlayer:PlayerModel, otherPlayer:PlayerModel, depth:Int):Future[Any]
 
-  def makeScoreChoice(choices:List[ResponseMessage]):Int
+  def makeScoreBasedChoice(choices:List[ResponseMessage]):ResponseMessage
 
   def getPlayer(aiPlayer:PlayerModel, otherPlayer:PlayerModel): PlayerModel
 }
