@@ -10,14 +10,15 @@ import scala.util.Success
 
 
 class MaxActor extends MiniMaxActor {
+  println("New MaxActor")
+  override def makeScoreChoice(choices: List[ResponseMessage]): Int = choices.map(e => e.score).max
 
-  override def spawnNewChildActor(column:Int, aiPlayer: PlayerModel, otherPlayer: PlayerModel, matchfield: MatchfieldModel[PlayerModel], depth: Int): Future[Any] = {
-    val nextMatchfield = GameLogic.setChip(Success(RoundModel(column, matchfield, otherPlayer))).get.matchField
+  override def getPlayer(aiPlayer: PlayerModel, otherPlayer: PlayerModel): PlayerModel = {
+    aiPlayer
+  }
+
+  override def spawnNewActor(columnNr: Int, matchField: MatchfieldModel[PlayerModel], aiPlayer: PlayerModel, otherPlayer: PlayerModel, depth: Int): Future[Any] = {
+    val nextMatchfield = GameLogic.setChip(Success(RoundModel(columnNr, matchField, aiPlayer))).get.matchField
     context.actorOf(Props[MinActor]) ? RequestMessage(aiPlayer, otherPlayer, nextMatchfield, depth)
   }
-
-  override def makeScoreChoice(choices: List[ResponseMessage]): Int = {
-    choices.map(e => e.score).max
-  }
-
 }

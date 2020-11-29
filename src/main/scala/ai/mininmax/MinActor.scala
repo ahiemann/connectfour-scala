@@ -13,12 +13,16 @@ import scala.concurrent.Future
 import scala.util.Success
 
 class MinActor extends MiniMaxActor {
-  override def spawnNewChildActor(column:Int, aiPlayer: PlayerModel, otherPlayer: PlayerModel, matchfield: MatchfieldModel[PlayerModel], depth: Int): Future[Any] = {
-    val nextMatchfield = GameLogic.setChip(Success(RoundModel(column, matchfield, aiPlayer))).get.matchField
-    context.actorOf(Props[MaxActor]) ? RequestMessage(aiPlayer, otherPlayer, nextMatchfield, depth)
+  println("New MinActor")
+
+  override def makeScoreChoice(choices: List[ResponseMessage]): Int = choices.map(e => e.score).max
+
+  override def getPlayer(aiPlayer: PlayerModel, otherPlayer: PlayerModel): PlayerModel = {
+    otherPlayer
   }
 
-  override def makeScoreChoice(choices: List[ResponseMessage]): Int = {
-    choices.map(e => e.score).max
+  override def spawnNewActor(columnNr: Int, matchField: MatchfieldModel[PlayerModel], aiPlayer: PlayerModel, otherPlayer: PlayerModel, depth: Int): Future[Any] = {
+    val nextMatchfield = GameLogic.setChip(Success(RoundModel(columnNr, matchField, otherPlayer))).get.matchField
+    context.actorOf(Props[MaxActor]) ? RequestMessage(aiPlayer, otherPlayer, nextMatchfield, depth)
   }
 }

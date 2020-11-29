@@ -22,10 +22,10 @@ object Main extends App {
   val matchfield = GameLogic.getInitialMatchField()
 
 
-  actor ! "Hallo Welt"
+  //actor ! "Hallo Welt"
   // actor ! 42
-  implicit val timeout: Timeout = Timeout(2, TimeUnit.SECONDS)
-  val future = actor ? RequestMessage(playerAI, playerHuman, matchfield, 0)
+  implicit val timeout: Timeout = Timeout(1000000, TimeUnit.SECONDS)
+  val future = actor ? RequestMessage(playerAI, playerHuman, matchfield, 1)
 
 
   val result = Await.result(future, timeout.duration)
