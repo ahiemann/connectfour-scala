@@ -2,20 +2,24 @@ package ai.minimax
 
 import java.util.concurrent.TimeUnit
 
+import ai.minimax.Main.possibleMoves
 import akka.actor.TypedActor.dispatcher
 import akka.actor.{Actor, Props}
 import akka.pattern.ask
 import akka.util.Timeout
+
+import scala.language.postfixOps
 import controllers.GameLogic
 import model.{MatchfieldModel, PlayerModel, RoundModel}
 
 import scala.collection.IterableOnce.iterableOnceExtensionMethods
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
 trait MiniMaxActor extends Actor{
 
-  implicit val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
+  implicit val timeout: Timeout = Timeout(5 seconds)
 
   override def receive: Receive = {
 
@@ -29,11 +33,10 @@ trait MiniMaxActor extends Actor{
       checkAndEvaluate(matchField, aiPlayer, otherPlayer, depth) match {
         case Some(score) => sender ! ResponseMessage(columnNr, score)
         case None =>
-          // get number of columns in the matchfield which are not filled up yet
-          val possibleColumns = List[Int](0, 1, 3) // TODO: Function in GameLogic to get a list of columns that aren't filled up yet
 
-          // Create the matchfield for each option and pass each one to the next child, which for a MaxActor is a MinActor.
-          implicit val timeout: Timeout = Timeout(5, TimeUnit.SECONDS)
+          val possibleColumns = GameLogic.getEmptyColumns(matchField)
+
+          implicit val timeout: Timeout = Timeout(5 seconds)
           val futures = for {
             columnNr <- possibleColumns
             future = spawnNewActor(columnNr, matchField, aiPlayer, otherPlayer, depth - 1)
@@ -47,16 +50,13 @@ trait MiniMaxActor extends Actor{
           val bestOption = makeScoreBasedChoice(futureResults.asInstanceOf[List[ResponseMessage]])
           sender ! bestOption
       }
-
-    // case responseMessage: ResponseMessage => context.parent ! responseMessage
-    case responseMessage: ResponseMessage => println("response message received")  // for now...
   }
 
   def checkAndEvaluate(matchfield:MatchfieldModel[PlayerModel], aiPlayer:PlayerModel, otherPlayer:PlayerModel, depth:Int):Option[Int] = {
-    if (depth == 0) Some(7) // we need an evaluation method that returns a value depending on the sitatuion in the matchfield
-    else if (GameLogic.checkIfSomeoneWon(matchfield, aiPlayer)) Some(1)
-    else if (GameLogic.checkIfSomeoneWon(matchfield, otherPlayer)) Some(-1)
-    else if (GameLogic.checkIfDraw(matchfield)) Some(0)
+    if (depth == 0) Some(7)
+    else if (GameLogic.checkIfSomeoneWon(matchfield, aiPlayer)) {Some(1)}
+    else if (GameLogic.checkIfSomeoneWon(matchfield, otherPlayer)) {if(depth >= 48) {possibleMoves(matchfield)}; Some(-1)}
+    else if (GameLogic.checkIfDraw(matchfield)) {Some(0)}
     else None
   }
 

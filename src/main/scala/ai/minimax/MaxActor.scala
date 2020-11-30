@@ -10,7 +10,8 @@ import scala.util.Success
 
 
 class MaxActor extends MiniMaxActor {
-  println("New MaxActor")
+  //println("New MaxActor")
+
   override def makeScoreBasedChoice(choices: List[ResponseMessage]): ResponseMessage = choices.maxBy(_.score)
 
   override def getPlayer(aiPlayer: PlayerModel, otherPlayer: PlayerModel): PlayerModel = {

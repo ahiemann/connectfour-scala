@@ -13,7 +13,7 @@ import scala.concurrent.Future
 import scala.util.Success
 
 class MinActor extends MiniMaxActor {
-  println("New MinActor")
+  //println("New MinActor")
 
   override def makeScoreBasedChoice(choices: List[ResponseMessage]): ResponseMessage = choices.minBy(_.score)
 

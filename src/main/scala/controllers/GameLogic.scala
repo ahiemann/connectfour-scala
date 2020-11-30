@@ -72,9 +72,6 @@ object GameLogic {
             } else{successivelyCount}
           }
           else {
-            // val max = if (successivelyCount > maxCount) successivelyCount
-            // else maxCount
-            // numberOfSuccessivelySymbols(tail, maxCount = max) // If row of equals symbols is broken
             numberOfSuccessivelySymbols(tail, maxCount) // If row of equals symbols is broken
           }
       case _ => maxCount // If list is empty or last symbol
@@ -86,10 +83,7 @@ object GameLogic {
       if((rows(posX)(posY) equals  lastState) && !(rows(posX)(posY) equals "NoPlayer"))
         return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),count+1, maxCount+1,rows)
       else
-       // if(count > maxCount)
-       //   return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),0, count,rows)
-       // else
-          return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),0, maxCount,rows)
+        return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),0, maxCount,rows)
     }
     maxCount
   }
@@ -172,7 +166,6 @@ object GameLogic {
         None
       }
       else {
-        val rows = matchField.rows
         if (matchField.rows(rowIndex)(column).sign != '-') {
           getNextEmptyRow(rowIndex + 1, column, matchField)
         } else {
@@ -182,5 +175,16 @@ object GameLogic {
     }
 
     getNextEmptyRow(0, column, matchField)
+  }
+
+  def getEmptyColumns(matchfieldModel: MatchfieldModel[PlayerModel]): List[Int] ={
+    val rows = matchfieldModel.rows.map(_.map(_.sign))
+    val step = rows.transpose.map(_.map(_.equals('-'))).map(_.count(_.equals(true))).toList
+    val emptyColumns = step.zipWithIndex.map { case (element, index) =>
+      if(element > 0) {
+      {s"$index"}
+      }
+     }
+    emptyColumns.filterNot(_ == ()).map(_.toString.toInt)
   }
 }
