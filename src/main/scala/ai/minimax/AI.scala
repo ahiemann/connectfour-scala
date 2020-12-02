@@ -27,8 +27,5 @@ object Main extends App {
   val result = Await.result(future, timeout.duration)
   println("Optimaler Zug zum Sieg der CPU: " + result)
 
-  def possibleMoves (s:MatchfieldModel[PlayerModel]){
-    println("Möglicher Spielverlauf zum Sieg des P1: " + s)
-  }
 }
 

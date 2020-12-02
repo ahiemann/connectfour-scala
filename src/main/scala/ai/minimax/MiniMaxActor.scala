@@ -2,7 +2,6 @@ package ai.minimax
 
 import java.util.concurrent.TimeUnit
 
-import ai.minimax.Main.possibleMoves
 import akka.actor.TypedActor.dispatcher
 import akka.actor.{Actor, Props}
 import akka.pattern.ask
@@ -54,9 +53,9 @@ trait MiniMaxActor extends Actor{
 
   def checkAndEvaluate(matchfield:MatchfieldModel[PlayerModel], aiPlayer:PlayerModel, otherPlayer:PlayerModel, depth:Int):Option[Int] = {
     if (depth == 0) Some(7)
-    else if (GameLogic.checkIfSomeoneWon(matchfield, aiPlayer)) {Some(1)}
-    else if (GameLogic.checkIfSomeoneWon(matchfield, otherPlayer)) {if(depth >= 48) {possibleMoves(matchfield)}; Some(-1)}
-    else if (GameLogic.checkIfDraw(matchfield)) {Some(0)}
+    else if (GameLogic.checkIfSomeoneWon(matchfield, aiPlayer)) Some(1)
+    else if (GameLogic.checkIfSomeoneWon(matchfield, otherPlayer)) Some(-1)
+    else if (GameLogic.checkIfDraw(matchfield)) Some(0)
     else None
   }
 
