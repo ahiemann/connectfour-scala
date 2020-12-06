@@ -10,4 +10,6 @@ case class MatchfieldModel[T](rows: Vector[Vector[T]]) {
 
   def setToken(row: Int, col: Int, player: T): MatchfieldModel[T] =
     copy(rows.updated(row, rows(row).updated(col, player)))
+
+  def cell(row:Int, col:Int): T = rows(row)(col)
 }
