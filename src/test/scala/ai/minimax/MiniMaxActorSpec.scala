@@ -26,6 +26,6 @@ class MiniMaxActorSpec extends AnyWordSpec{
 
     "receive an Answer from the request message" in {
       val future = actor ? RequestMessage(None, playerAI, playerHuman, matchfield, 50)
-      Await.result(future, timeout.duration) should be(ResponseMessage(Some(5), 1))
+      Await.result(future, timeout.duration) should be(ResponseMessage(Some(3), 50.0))
     }
 }
