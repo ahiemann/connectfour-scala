@@ -2,6 +2,9 @@
 .eclipse
 .idea
 .bsp
+.metals
+.vscode
+project/.bloop
 /target
 
 
