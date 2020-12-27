@@ -1,6 +1,7 @@
 package dsl
 
 import model.PlayerModel
+import scala.language.implicitConversions
 
 object GameColumnImplicit {
   implicit def convertIntToGameColumn(column: Int): GameColumn = new GameColumn(column)

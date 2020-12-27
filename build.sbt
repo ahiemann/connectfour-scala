@@ -1,21 +1,19 @@
+import sbt.Keys.libraryDependencies
+
 name := "ConnectFour"
 
-version := "0.1"
+val dottyVersion = "3.0.0-M3"
 
-scalaVersion := "2.13.3"
+lazy val root = project
+  .in(file("."))
+  .settings(
+    name := "dotty-simple",
+    version := "0.1.0",
 
-// local testing
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.2"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % "test"
-libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
-libraryDependencies ++= {
-  Seq(
-    "com.typesafe.akka" %% "akka-actor" % "2.5.23",
-    "com.typesafe.akka" %% "akka-testkit" % "2.5.23" % Test
+    scalaVersion := dottyVersion,
+    // local testing
+    libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.3",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.3" % "test"
+
   )
-}
-
-
-
-
 

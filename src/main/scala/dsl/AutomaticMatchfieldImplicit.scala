@@ -5,6 +5,7 @@ import model.{MatchfieldModel, PlayerModel, RoundModel}
 
 import scala.annotation.tailrec
 import scala.util.Try
+import scala.language.implicitConversions
 
 object AutomaticMatchfieldImplicit {
   implicit def convertMatchFieldToAutomaticMatchfield(matchfieldModel: MatchfieldModel[PlayerModel]): AutomaticMatchfield = new AutomaticMatchfield(matchfieldModel)
