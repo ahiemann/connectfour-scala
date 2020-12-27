@@ -5,7 +5,7 @@ import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.{Failure, Success, Try}
 
-object ConnectFour {
+object ConnectFour:
 
   def main(args: Array[String]): Unit = {
 
@@ -52,4 +52,3 @@ object ConnectFour {
     println(gameOverMessage)
 
   }
-}

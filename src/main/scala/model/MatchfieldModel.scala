@@ -1,6 +1,6 @@
 package model
 
-case class MatchfieldModel[T](rows: Vector[Vector[T]]) {
+case class MatchfieldModel[T](rows: Vector[Vector[T]]):
   def this(filling: T) =
     this(Vector.tabulate(6, 7) { (row, col) =>
       filling
@@ -12,4 +12,3 @@ case class MatchfieldModel[T](rows: Vector[Vector[T]]) {
     copy(rows.updated(row, rows(row).updated(col, player)))
 
   def cell(row:Int, col:Int): T = rows(row)(col)
-}

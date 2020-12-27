@@ -1,5 +1,4 @@
 package model
 
-trait RoundResult {
+trait RoundResult:
   val matchfield: MatchfieldModel[PlayerModel]
-}

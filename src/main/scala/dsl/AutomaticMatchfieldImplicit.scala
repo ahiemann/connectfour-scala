@@ -7,11 +7,11 @@ import scala.annotation.tailrec
 import scala.util.Try
 import scala.language.implicitConversions
 
-object AutomaticMatchfieldImplicit {
+object AutomaticMatchfieldImplicit:
   implicit def convertMatchFieldToAutomaticMatchfield(matchfieldModel: MatchfieldModel[PlayerModel]): AutomaticMatchfield = AutomaticMatchfield(matchfieldModel)
 
 
-  implicit class AutomaticMatchfield(matchfield: MatchfieldModel[PlayerModel]) {
+  implicit class AutomaticMatchfield(matchfield: MatchfieldModel[PlayerModel]):
     def play(gameColumns: GameColumnPlayerMapping*): MatchfieldModel[PlayerModel] = {
 
       @tailrec
@@ -27,6 +27,6 @@ object AutomaticMatchfieldImplicit {
       
       setChips(matchfield, gameColumns)
     }
-  }
+  
 
-}
+

@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.{Failure, Success, Try}
 
-object GameLogic {
+object GameLogic:
 
   def playRound(roundData: Try[RoundModel]):Try[RoundResult] = roundData match {
     case Success(r) =>
@@ -188,4 +188,3 @@ object GameLogic {
      }
     emptyColumns.filterNot(_ == ()).map(_.toString.toInt)
   }
-}

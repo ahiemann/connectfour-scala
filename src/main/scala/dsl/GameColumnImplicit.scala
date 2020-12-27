@@ -3,7 +3,7 @@ package dsl
 import model.PlayerModel
 import scala.language.implicitConversions
 
-object GameColumnImplicit {
+object GameColumnImplicit:
   implicit def convertIntToGameColumn(column: Int): GameColumn = new GameColumn(column)
 
   implicit class GameColumn(column: Int) {
@@ -11,4 +11,3 @@ object GameColumnImplicit {
       GameColumnPlayerMapping(column, player)
     }
   }
-}
