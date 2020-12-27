@@ -17,7 +17,7 @@ object ConnectFour:
     println(s"Symbol of player ${player2.name} is ${player2.sign}")
 
     // get random index between 0 and 1 and choose player that starts accordingly
-    val startPlayer = if (scala.util.Random.nextInt(2) == 0) player1 else player2
+    val startPlayer = if scala.util.Random.nextInt(2) == 0 then player1 else player2
 
     @tailrec
     def playRound(currentPlayer:PlayerModel, player1:PlayerModel, player2:PlayerModel, matchfield:MatchfieldModel[PlayerModel]):String = {
@@ -37,7 +37,7 @@ object ConnectFour:
         case Success(r : RoundResultGameOver) => s"${r.gameOverReason}\n${r.matchfield}"
         case Success(r : RoundResultMoveOk) =>
           println(GameLogic.getMatchfieldOutput(Vector(player1, player2), r.matchfield))
-          val nextPlayer = if (currentPlayer == player1) player2 else player1
+          val nextPlayer = if currentPlayer == player1 then player2 else player1
           playRound(nextPlayer, player1, player2, r.matchfield)
         case Failure(f) =>
           println(f.getMessage)

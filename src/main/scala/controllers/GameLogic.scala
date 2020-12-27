@@ -32,12 +32,12 @@ object GameLogic:
 
     def fourInColumn() : Boolean = {
       val resultList = list.transpose.map(x =>isSuccessively(x.toList,3)).filter(_ == true)
-      if(resultList contains(true)) true else false
+      if resultList contains(true) then true else false
     }
 
     def fourInRow() : Boolean = {
       val resultList = list.map(x =>isSuccessively(x.toList,3)).filter(_ == true)
-      if(resultList contains(true)) true else false
+      if resultList contains(true) then true else false
     }
 
     def fourDiagonalFromXTop() : Boolean = {
@@ -47,10 +47,10 @@ object GameLogic:
       val v4 = countDiagonal(6,1,0,"noPlayer", 0, 0, rows)
       val v5 = countDiagonal(5,2,0,"noPlayer", 0, 0, rows)
       val v6 = countDiagonal(4,3,0,"noPlayer", 0, 0, rows)
-      if(v1>=3 || v2>=3 || v3>=3 || v4>=3 || v5>=3 || v6>=3) true else false
+      if v1>=3 || v2>=3 || v3>=3 || v4>=3 || v5>=3 || v6>=3 then true else false
     }
 
-    if(fourInColumn() || fourInRow() || fourDiagonalFromXTop()) true else false
+    if fourInColumn() || fourInRow() || fourDiagonalFromXTop() then true else false
   }
 
   def isSuccessively(list: List[Boolean], endNum: Int): Boolean = {
@@ -60,31 +60,28 @@ object GameLogic:
 
   @tailrec
   private def numberOfSuccessivelySymbols(list: List[Boolean], successivelyCount: Int = 0, maxCount: Int = 0): Int = {
-    val currentSymbol = if (list.nonEmpty) list.headOption else List(false)
-    val tail = if (list.nonEmpty) list.tail else List(false)
+    val currentSymbol = if list.nonEmpty then list.headOption else List(false)
+    val tail = if list.nonEmpty then list.tail else List(false)
 
     (currentSymbol, tail.headOption) match {
       case (Some(current), Some(next)) =>
-          if (current == true) { // If current symbol is from selected player (true)
-            if(current == next){
-              val max = if (successivelyCount >= maxCount) successivelyCount + 1 else maxCount
+          if current == true then // If current symbol is from selected player (true)
+            if current == next then
+              val max = if successivelyCount >= maxCount then successivelyCount + 1 else maxCount
               numberOfSuccessivelySymbols(tail, successivelyCount = successivelyCount + 1, maxCount = max) // If found next equal symbol
-            } else{successivelyCount}
-          }
-          else {
+            else successivelyCount
+          else
             numberOfSuccessivelySymbols(tail, maxCount) // If row of equals symbols is broken
-          }
       case _ => maxCount // If list is empty or last symbol
     }
   }
 
   def countDiagonal(maxLength: Int = 6, posX: Int = 0, posY: Int = 0, lastState: String = "", count: Int = 0, maxCount: Int = 0, rows: Vector[Vector[String]]): Int ={
-    if(posX < maxLength){
-      if((rows(posX)(posY) equals  lastState) && !(rows(posX)(posY) equals "NoPlayer"))
+    if posX < maxLength then
+      if (rows(posX)(posY) equals lastState) && !(rows(posX)(posY) equals "NoPlayer") then
         return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),count+1, maxCount+1,rows)
       else
         return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),0, maxCount,rows)
-    }
     maxCount
   }
 
@@ -144,35 +141,29 @@ object GameLogic:
       val matchField = roundData.matchField
       val player = roundData.player
 
-      if (checkIfDraw(matchField)) {
+      if checkIfDraw(matchField) then
         Success(Some("The game is over, drawn."))
-      }
-      else if (checkIfSomeoneWon(matchField, player)) {
+      else if checkIfSomeoneWon(matchField, player) then
         Success(Some(s"Player ${roundData.player.name} has won the game!"))
-      }
-      else {
+      else
         Success(None)
-      }
 
     case Failure(roundData) => Failure(roundData)
   }
 
   def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {
 
-    if (! (0 to 6 contains column) ) throw Exception("Invalid column")
+    if !(0 to 6 contains column) then throw Exception("Invalid column")
 
     @tailrec
     def getNextEmptyRow(rowIndex: Int, column:Int, matchField: MatchfieldModel[PlayerModel]) : Option[Int] = {
-      if (rowIndex == matchField.rows.size) {
+      if rowIndex == matchField.rows.size then
         None
-      }
-      else {
-        if (matchField.rows(rowIndex)(column).sign != '-') {
+      else
+        if matchField.rows(rowIndex)(column).sign != '-' then
           getNextEmptyRow(rowIndex + 1, column, matchField)
-        } else {
+        else
           Some(rowIndex)
-        }
-      }
     }
 
     getNextEmptyRow(0, column, matchField)
@@ -182,9 +173,7 @@ object GameLogic:
     val rows = matchfieldModel.rows.map(_.map(_.sign))
     val step = rows.transpose.map(_.map(_.equals('-'))).map(_.count(_.equals(true))).toList
     val emptyColumns = step.zipWithIndex.map { case (element, index) =>
-      if(element > 0) {
-      {s"$index"}
-      }
+      if element > 0 then {s"$index"}
      }
     emptyColumns.filterNot(_ == ()).map(_.toString.toInt)
   }
