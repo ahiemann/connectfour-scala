@@ -97,11 +97,12 @@ object GameLogic {
   }
 
   def getInitialMatchField() = {
-    new MatchfieldModel[PlayerModel](new PlayerModel("NoPlayer", '-'))
+    // TODO: Find out why "new" keyword can't be removed here...
+    new MatchfieldModel[PlayerModel](PlayerModel("NoPlayer", '-'))
   }
 
   def getInitialPlayerModel(name: String, sign: Char) = {
-    new PlayerModel(name,sign)
+    PlayerModel(name,sign)
   }
 
   def getMatchfieldOutput(players: Vector[PlayerModel], matrix: MatchfieldModel[PlayerModel]) = {
@@ -130,7 +131,7 @@ object GameLogic {
           case Some(rowIndex) =>
             val updatedMatchfield = roundData.matchField.setToken(rowIndex, columnIndex, player)
             Success(RoundModel(columnIndex,updatedMatchfield,player))
-          case None => Failure(new Exception("The column is full"))
+          case None => Failure(Exception("The column is full"))
         }
         case Failure(exception) => Failure(exception)
       }
@@ -158,7 +159,7 @@ object GameLogic {
 
   def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {
 
-    if (! (0 to 6 contains column) ) throw new Exception("Invalid column")
+    if (! (0 to 6 contains column) ) throw Exception("Invalid column")
 
     @tailrec
     def getNextEmptyRow(rowIndex: Int, column:Int, matchField: MatchfieldModel[PlayerModel]) : Option[Int] = {

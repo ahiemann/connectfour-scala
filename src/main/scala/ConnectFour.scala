@@ -30,7 +30,7 @@ object ConnectFour {
           val realIndex = inputIndex - 1
           Success(RoundModel(realIndex, matchfield, currentPlayer))
 
-        case Failure(_) => Failure(new Exception("Wrong input. Please type the number of the column where you would like to insert your chip"))
+        case Failure(_) => Failure(Exception("Wrong input. Please type the number of the column where you would like to insert your chip"))
       }
 
       GameLogic.playRound(roundData) match {
@@ -42,7 +42,7 @@ object ConnectFour {
         case Failure(f) =>
           println(f.getMessage)
           playRound(currentPlayer, player1, player2, matchfield)
-        case _ => throw new Exception("Unknown RoundResult")
+        case _ => throw Exception("Unknown RoundResult")
       }
 
     }

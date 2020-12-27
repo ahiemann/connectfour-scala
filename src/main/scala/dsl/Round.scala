@@ -6,11 +6,11 @@ import model.{MatchfieldModel, PlayerModel, RoundModel}
 import scala.util.Try
 
 object Insert {
-  def chipOf(player:PlayerModel): ColumnMediator = new ColumnMediator(player)
+  def chipOf(player:PlayerModel): ColumnMediator = ColumnMediator(player)
 }
 
 class ColumnMediator(val player:PlayerModel) {
-  def inColumn(colIndex: Int):MatchfieldMediator = new MatchfieldMediator(colIndex, player)
+  def inColumn(colIndex: Int):MatchfieldMediator = MatchfieldMediator(colIndex, player)
 }
 
 class MatchfieldMediator(colIndex: Int, player: PlayerModel) {

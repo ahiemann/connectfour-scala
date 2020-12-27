@@ -8,7 +8,7 @@ import scala.util.Try
 import scala.language.implicitConversions
 
 object AutomaticMatchfieldImplicit {
-  implicit def convertMatchFieldToAutomaticMatchfield(matchfieldModel: MatchfieldModel[PlayerModel]): AutomaticMatchfield = new AutomaticMatchfield(matchfieldModel)
+  implicit def convertMatchFieldToAutomaticMatchfield(matchfieldModel: MatchfieldModel[PlayerModel]): AutomaticMatchfield = AutomaticMatchfield(matchfieldModel)
 
 
   implicit class AutomaticMatchfield(matchfield: MatchfieldModel[PlayerModel]) {
