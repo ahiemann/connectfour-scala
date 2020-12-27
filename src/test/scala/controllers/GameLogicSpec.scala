@@ -1,6 +1,6 @@
 package controllers
 
-import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
+import dsl.AutomaticMatchfieldImplicit._
 import dsl.GameColumnImplicit._
 import model.{PlayerModel, RoundModel, RoundResultGameOver, RoundResultMoveOk}
 import org.scalatest.wordspec.AnyWordSpec

@@ -8,10 +8,7 @@ import scala.util.Try
 import scala.language.implicitConversions
 
 object AutomaticMatchfieldImplicit:
-  implicit def convertMatchFieldToAutomaticMatchfield(matchfieldModel: MatchfieldModel[PlayerModel]): AutomaticMatchfield = AutomaticMatchfield(matchfieldModel)
-
-
-  implicit class AutomaticMatchfield(matchfield: MatchfieldModel[PlayerModel]):
+  extension(matchfield:MatchfieldModel[PlayerModel])
     def play(gameColumns: GameColumnPlayerMapping*): MatchfieldModel[PlayerModel] = {
 
       @tailrec
@@ -22,9 +19,10 @@ object AutomaticMatchfieldImplicit:
           val resultMatchfield = GameLogic.setChip(Try(RoundModel(gameColumn.column, matchfield, gameColumn.player)))
           setChips(resultMatchfield.get.matchField, gameColumns.tail)
       }
-      
+
       setChips(matchfield, gameColumns)
     }
+    
   
 
 
