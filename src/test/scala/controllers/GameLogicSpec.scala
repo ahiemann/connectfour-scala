@@ -235,19 +235,6 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
       GameLogic.checkIfSomeoneWon(finalMatchField, player1) should be (false)
     }
-
-    "return a list with the empty columns" in {
-      val finalMatchField = initialField.play(
-        0 -> player1,
-        1 -> player1, 1 -> player1,
-        2 -> player1, 2 -> player1, 2 -> player1,
-        3 -> player1, 3 -> player1, 3 -> player1, 3 -> player1,
-        4 -> player1, 4 -> player1, 4 -> player1, 4 -> player1, 4 -> player1,
-        5 -> player1, 5 -> player1, 5 -> player1, 5 -> player1, 5 -> player1, 5 -> player1,
-        6 -> player1, 6 -> player1, 6 -> player1, 6 -> player1, 6 -> player1, 6 -> player1
-      )
-
-      GameLogic.getEmptyColumns(finalMatchField) should be (List(0,1,2,3,4))
-    }
+    
   }
 }

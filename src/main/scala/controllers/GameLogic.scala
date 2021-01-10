@@ -168,12 +168,3 @@ object GameLogic:
 
     getNextEmptyRow(0, column, matchField)
   }
-
-  def getEmptyColumns(matchfieldModel: MatchfieldModel[PlayerModel]): List[Int] ={
-    val rows = matchfieldModel.rows.map(_.map(_.sign))
-    val step = rows.transpose.map(_.map(_.equals('-'))).map(_.count(_.equals(true))).toList
-    val emptyColumns = step.zipWithIndex.map { case (element, index) =>
-      if element > 0 then {s"$index"}
-     }
-    emptyColumns.filterNot(_ == ()).map(_.toString.toInt)
-  }
