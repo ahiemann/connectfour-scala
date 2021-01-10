@@ -17,7 +17,6 @@ object GameLogic:
         case Failure(e) => Failure(e)
       
     case Failure(e) => Failure(e)
-  
 
   /**
     * Check if a player has 4 chips in one row, column or diagonal
@@ -96,18 +95,19 @@ object GameLogic:
   def getInitialPlayerModel(name: String, sign: Char) = PlayerModel(name,sign)
 
   def getMatchfieldOutput(players: Vector[PlayerModel], matrix: MatchfieldModel[PlayerModel]) =
-    ("------- Connect Four  -------\n" +
-      "| " + players(0).name + " : " + players(0).sign + "\n" +
-      "| " + players(1).name + " : " + players(1).sign + "\n" +
-      "--------------------------" + "\n" +
-      matrix.rows(5) + "\n" +
-      matrix.rows(4) + "\n" +
-      matrix.rows(3) + "\n" +
-      matrix.rows(2) + "\n" +
-      matrix.rows(1) + "\n" +
-      matrix.rows(0) + "\n" +
-      "---------------------------" + "\n" +
-      "      |1| 2| 3| 4| 5| 6| 7|")
+    ("------- Connect Four  -------\n"
+      ++ "| " + players(0).name + " : " + players(0).sign + "\n"
+      ++ "| " + players(1).name + " : " + players(1).sign + "\n"
+      ++ "--------------------------" + "\n"
+      ++ "" + matrix.rows(5) + "\n"
+      ++ "" + matrix.rows(4) + "\n"
+      ++ "" + matrix.rows(3) + "\n"
+      ++ "" + matrix.rows(2) + "\n"
+      ++ "" + matrix.rows(1) + "\n"
+      ++ "" + matrix.rows(0) + "\n"
+      ++ "---------------------------" + "\n"
+      ++ "      |1| 2| 3| 4| 5| 6| 7|")
+
 
   def setChip(roundData : Try[RoundModel]): Try[RoundModel] = roundData match
     case Success(roundData) =>
