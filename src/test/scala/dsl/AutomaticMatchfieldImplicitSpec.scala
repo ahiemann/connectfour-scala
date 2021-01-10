@@ -16,7 +16,7 @@ class AutomaticMatchfieldImplicitSpec extends AnyWordSpec with Matchers {
       initialMatchfield.play(
         GameColumnPlayerMapping(1, player1),
         GameColumnPlayerMapping(2, player1),
-        GameColumnPlayerMapping(3, player1)) shouldBe a [MatchfieldModel[_]]
+        GameColumnPlayerMapping(3, player1)) shouldBe a [MatchfieldModel[?]]
     }
   }
 }
