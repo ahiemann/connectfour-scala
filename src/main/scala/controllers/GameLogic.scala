@@ -8,16 +8,16 @@ import scala.util.{Failure, Success, Try}
 
 object GameLogic:
 
-  def playRound(roundData: Try[RoundModel]):Try[RoundResult] = roundData match {
+  def playRound(roundData: Try[RoundModel]):Try[RoundResult] = roundData match 
     case Success(r) =>
       val setChipResult = GameLogic.setChip(roundData)
-      checkIfGameIsOver(setChipResult) match {
+      checkIfGameIsOver(setChipResult) match 
         case Success(Some(gameOverMessage)) => Success(RoundResultGameOver(setChipResult.get.matchField, gameOverMessage))
         case Success(None) => Success(RoundResultMoveOk(setChipResult.get.matchField))
         case Failure(e) => Failure(e)
-      }
+      
     case Failure(e) => Failure(e)
-  }
+  
 
   /**
     * Check if a player has 4 chips in one row, column or diagonal
@@ -26,21 +26,19 @@ object GameLogic:
     * @param player
     * @return Option with the boolean if the game is won or None
     */
-  def checkIfSomeoneWon(matchfield : MatchfieldModel[PlayerModel], player: PlayerModel) : Boolean = {
+  def checkIfSomeoneWon(matchfield : MatchfieldModel[PlayerModel], player: PlayerModel) : Boolean =
     val rows = matchfield.rows.map(_.map(_.name))
     val list = rows.map(_.map(_.equals(player.name))).toList
 
-    def fourInColumn() : Boolean = {
+    def fourInColumn() : Boolean =
       val resultList = list.transpose.map(x =>isSuccessively(x.toList,3)).filter(_ == true)
       if resultList contains(true) then true else false
-    }
 
-    def fourInRow() : Boolean = {
+    def fourInRow() : Boolean =
       val resultList = list.map(x =>isSuccessively(x.toList,3)).filter(_ == true)
       if resultList contains(true) then true else false
-    }
 
-    def fourDiagonalFromXTop() : Boolean = {
+    def fourDiagonalFromXTop() : Boolean =
       val v1 = countDiagonal(4,0,2,"noPlayer", 0, 0, rows)
       val v2 = countDiagonal(5,0,1,"noPlayer", 0, 0, rows)
       val v3 = countDiagonal(6,0,0,"noPlayer", 0, 0, rows)
@@ -48,22 +46,21 @@ object GameLogic:
       val v5 = countDiagonal(5,2,0,"noPlayer", 0, 0, rows)
       val v6 = countDiagonal(4,3,0,"noPlayer", 0, 0, rows)
       if v1>=3 || v2>=3 || v3>=3 || v4>=3 || v5>=3 || v6>=3 then true else false
-    }
+    
 
     if fourInColumn() || fourInRow() || fourDiagonalFromXTop() then true else false
-  }
+  
 
-  def isSuccessively(list: List[Boolean], endNum: Int): Boolean = {
+  def isSuccessively(list: List[Boolean], endNum: Int): Boolean =
     val consecutiveCount = numberOfSuccessivelySymbols(list)
     consecutiveCount >= endNum
-  }
 
   @tailrec
-  private def numberOfSuccessivelySymbols(list: List[Boolean], successivelyCount: Int = 0, maxCount: Int = 0): Int = {
+  private def numberOfSuccessivelySymbols(list: List[Boolean], successivelyCount: Int = 0, maxCount: Int = 0): Int =
     val currentSymbol = if list.nonEmpty then list.headOption else List(false)
     val tail = if list.nonEmpty then list.tail else List(false)
 
-    (currentSymbol, tail.headOption) match {
+    (currentSymbol, tail.headOption) match
       case (Some(current), Some(next)) =>
           if current == true then // If current symbol is from selected player (true)
             if current == next then
@@ -73,36 +70,32 @@ object GameLogic:
           else
             numberOfSuccessivelySymbols(tail, maxCount) // If row of equals symbols is broken
       case _ => maxCount // If list is empty or last symbol
-    }
-  }
+    
+  
 
-  def countDiagonal(maxLength: Int = 6, posX: Int = 0, posY: Int = 0, lastState: String = "", count: Int = 0, maxCount: Int = 0, rows: Vector[Vector[String]]): Int ={
+  def countDiagonal(maxLength: Int = 6, posX: Int = 0, posY: Int = 0, lastState: String = "", count: Int = 0, maxCount: Int = 0, rows: Vector[Vector[String]]): Int =
     if posX < maxLength then
       if (rows(posX)(posY) equals lastState) && !(rows(posX)(posY) equals "NoPlayer") then
         return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),count+1, maxCount+1,rows)
       else
         return countDiagonal(maxLength,posX+1, posY+1,rows(posX)(posY),0, maxCount,rows)
     maxCount
-  }
+  
 
-  def checkIfDraw(matchField:MatchfieldModel[PlayerModel]): Boolean = {
+  def checkIfDraw(matchField:MatchfieldModel[PlayerModel]): Boolean =
     matchField.rows.forall(
       row => row.forall(
         player => { player.sign != '-' }
       )
     )
-  }
 
-  def getInitialMatchField() = {
+  def getInitialMatchField() =
     // TODO: Find out why "new" keyword can't be removed here...
     new MatchfieldModel[PlayerModel](PlayerModel("NoPlayer", '-'))
-  }
 
-  def getInitialPlayerModel(name: String, sign: Char) = {
-    PlayerModel(name,sign)
-  }
+  def getInitialPlayerModel(name: String, sign: Char) = PlayerModel(name,sign)
 
-  def getMatchfieldOutput(players: Vector[PlayerModel], matrix: MatchfieldModel[PlayerModel]) = {
+  def getMatchfieldOutput(players: Vector[PlayerModel], matrix: MatchfieldModel[PlayerModel]) =
     ("------- Connect Four  -------\n" +
       "| " + players(0).name + " : " + players(0).sign + "\n" +
       "| " + players(1).name + " : " + players(1).sign + "\n" +
@@ -115,28 +108,24 @@ object GameLogic:
       matrix.rows(0) + "\n" +
       "---------------------------" + "\n" +
       "      |1| 2| 3| 4| 5| 6| 7|")
-  }
 
-  def setChip(roundData : Try[RoundModel]): Try[RoundModel] = roundData match {
-    case Success(roundData) => {
+  def setChip(roundData : Try[RoundModel]): Try[RoundModel] = roundData match
+    case Success(roundData) =>
       val columnIndex = roundData.columnIndex
       val matchField = roundData.matchField
       val player = roundData.player
 
-      Try(getNextEmptyRow(columnIndex, matchField)) match {
-        case Success(result) => result match {
+      Try(getNextEmptyRow(columnIndex, matchField)) match 
+        case Success(result) => result match 
           case Some(rowIndex) =>
             val updatedMatchfield = roundData.matchField.setToken(rowIndex, columnIndex, player)
             Success(RoundModel(columnIndex,updatedMatchfield,player))
           case None => Failure(Exception("The column is full"))
-        }
         case Failure(exception) => Failure(exception)
-      }
-    }
     case Failure(roundData) => Failure(roundData)
-  }
+  
 
-  def checkIfGameIsOver(roundData : Try[RoundModel]) : Try[Option[String]] = roundData match {
+  def checkIfGameIsOver(roundData : Try[RoundModel]) : Try[Option[String]] = roundData match
     case Success(roundData) =>
       val matchField = roundData.matchField
       val player = roundData.player
@@ -149,14 +138,13 @@ object GameLogic:
         Success(None)
 
     case Failure(roundData) => Failure(roundData)
-  }
 
-  def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {
+  def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] =
 
     if !(0 to 6 contains column) then throw Exception("Invalid column")
 
     @tailrec
-    def getNextEmptyRow(rowIndex: Int, column:Int, matchField: MatchfieldModel[PlayerModel]) : Option[Int] = {
+    def getNextEmptyRow(rowIndex: Int, column:Int, matchField: MatchfieldModel[PlayerModel]) : Option[Int] =
       if rowIndex == matchField.rows.size then
         None
       else
@@ -164,7 +152,5 @@ object GameLogic:
           getNextEmptyRow(rowIndex + 1, column, matchField)
         else
           Some(rowIndex)
-    }
 
     getNextEmptyRow(0, column, matchField)
-  }

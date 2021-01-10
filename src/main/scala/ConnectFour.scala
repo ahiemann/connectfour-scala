@@ -6,7 +6,7 @@ import scala.io.StdIn
 import scala.util.{Failure, Success, Try}
 
 
-@main def connectFour(player1Name:String, player2Name:String): Unit = {
+@main def connectFour(player1Name:String, player2Name:String): Unit =
 
   // Create players
   val player1 = GameLogic.getInitialPlayerModel(player1Name, 'x')
@@ -19,20 +19,19 @@ import scala.util.{Failure, Success, Try}
   val startPlayer = if scala.util.Random.nextInt(2) == 0 then player1 else player2
 
   @tailrec
-  def playRound(currentPlayer: PlayerModel, player1: PlayerModel, player2: PlayerModel, matchfield: MatchfieldModel[PlayerModel]): String = {
+  def playRound(currentPlayer: PlayerModel, player1: PlayerModel, player2: PlayerModel, matchfield: MatchfieldModel[PlayerModel]): String =
     println(GameLogic.getMatchfieldOutput(Vector(player1, player2), matchfield))
     println(s"${currentPlayer.name}, in which column should the chip be placed? ")
 
-    val roundData = Try(StdIn.readInt()) match {
-
+    val roundData = Try(StdIn.readInt()) match
       case Success(inputIndex) =>
         val realIndex = inputIndex - 1
         Success(RoundModel(realIndex, matchfield, currentPlayer))
 
       case Failure(_) => Failure(Exception("Wrong input. Please type the number of the column where you would like to insert your chip"))
-    }
+    
 
-    GameLogic.playRound(roundData) match {
+    GameLogic.playRound(roundData) match
       case Success(r: RoundResultGameOver) => s"${r.gameOverReason}\n${r.matchfield}"
       case Success(r: RoundResultMoveOk) =>
         println(GameLogic.getMatchfieldOutput(Vector(player1, player2), r.matchfield))
@@ -42,12 +41,9 @@ import scala.util.{Failure, Success, Try}
         println(f.getMessage)
         playRound(currentPlayer, player1, player2, matchfield)
       case _ => throw Exception("Unknown RoundResult")
-    }
-
-  }
-
+  
   // Start the game
   val gameOverMessage = playRound(startPlayer, player1, player2, GameLogic.getInitialMatchField())
   println(gameOverMessage)
 
-}
+
