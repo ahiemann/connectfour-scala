@@ -9,7 +9,7 @@ class RoundResultGameOverSpec extends AnyWordSpec with should.Matchers {
       val roundResultGameOver = RoundResultGameOver(GameLogic.getInitialMatchField(), "This game is over before it has even started. ")
 
       "have a matchfield" in {
-        roundResultGameOver.matchfield shouldBe a [MatchfieldModel[_]]
+        roundResultGameOver.matchfield shouldBe a [MatchfieldModel[?]]
       }
       "have a string that describes why the game is over" in {
         roundResultGameOver.gameOverReason shouldBe a [String]
