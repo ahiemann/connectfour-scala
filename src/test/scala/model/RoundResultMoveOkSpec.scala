@@ -9,7 +9,7 @@ class RoundResultMoveOkSpec extends AnyWordSpec with should.Matchers {
       val roundResultMoveOk = RoundResultMoveOk(GameLogic.getInitialMatchField())
 
       "have a matchfield" in {
-        roundResultMoveOk.matchfield shouldBe a [MatchfieldModel[_]]
+        roundResultMoveOk.matchfield shouldBe a [MatchfieldModel[?]]
       }
   }
 }
