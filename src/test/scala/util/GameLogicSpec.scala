@@ -1,10 +1,10 @@
-package controllers
+package util
 
 import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
 import model.{PlayerModel, RoundModel, RoundResultGameOver, RoundResultMoveOk}
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.util.{Failure, Success}
 
@@ -15,28 +15,47 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     val player2 = PlayerModel("Erika Mustermann", 'o')
     val player3 = PlayerModel("Hans Peter", 'o')
     val noPlayerPlayer = PlayerModel("NoPlayer", '-')
-    val initialRoundModel = Success(RoundModel(0, initialField, player1))
+    val initialRoundModel = RoundModel(0, initialField, player1)
 
 
     "return an initial match field" in {
-      GameLogic.getInitialMatchField().toString should be("MatchfieldModel(Vector(Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      GameLogic.getInitialMatchField().toString should be(s"""--------------------------
+                                                              |Vector(-, -, -, -, -, -, -)
+                                                              |Vector(-, -, -, -, -, -, -)
+                                                              |Vector(-, -, -, -, -, -, -)
+                                                              |Vector(-, -, -, -, -, -, -)
+                                                              |Vector(-, -, -, -, -, -, -)
+                                                              |Vector(-, -, -, -, -, -, -)
+                                                              |---------------------------
+                                                              |      |1| 2| 3| 4| 5| 6| 7|""".stripMargin)
     }
 
     "return an Some(MatchfieldModel(...)) with one token" in {
-      GameLogic.setChip(initialRoundModel).get.matchField.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      GameLogic.setChip(initialRoundModel).get.matchfield.toString should be (s"""--------------------------
+                                                                                 |Vector(-, -, -, -, -, -, -)
+                                                                                 |Vector(-, -, -, -, -, -, -)
+                                                                                 |Vector(-, -, -, -, -, -, -)
+                                                                                 |Vector(-, -, -, -, -, -, -)
+                                                                                 |Vector(-, -, -, -, -, -, -)
+                                                                                 |Vector(x, -, -, -, -, -, -)
+                                                                                 |---------------------------
+                                                                                 |      |1| 2| 3| 4| 5| 6| 7|""".stripMargin)
     }
 
     "return a Failure if the target column was already full" in {
       val columnFullField = initialField.play(0 -> player1, 0 -> player2, 0 -> player1, 0 -> player2,0 -> player1, 0 -> player2)
-      an [Exception] should be thrownBy GameLogic.setChip(Success(RoundModel(0, columnFullField, player1))).get
+      an [Exception] should be thrownBy GameLogic.setChip(RoundModel(0, columnFullField, player1)).get
     }
 
+    // TODO: Check if the follwing test can be replaced or if it is necessary in general
+    /*
     "return a Failure if the incoming Try[RoundResult] already was a Failure" in {
-      an [Exception] should be thrownBy GameLogic.setChip(Failure(new Exception("Nevermind"))).get
+      an [Exception] should be thrownBy GameLogic.setChip(new Exception("Nevermind")).get
     }
+    */
 
     "return a failure if a invalid column to insert the chip was selected" in {
-      an [Exception] should be thrownBy GameLogic.setChip(Success(RoundModel(42, initialField, player1))).get
+      an [Exception] should be thrownBy GameLogic.setChip(RoundModel(42, initialField, player1)).get
     }
 
     "return the next free row for token" in {
@@ -91,23 +110,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       GameLogic.getNextEmptyRow(column, round5matchField) should be (Some(5))
     }
 
-    "return a Success that contains a RoundResultGameOver if the game is over for some reason" in {
-      val matchfieldWithWinner = initialField.play(0 -> player1, 1 -> player1, 2 -> player1)
-      GameLogic.playRound(Success(RoundModel(3, matchfieldWithWinner, player1))).get shouldBe a [RoundResultGameOver]
-    }
 
-    "return a Success with the value None if the game is not over yet" in {
-      GameLogic.playRound(Success(RoundModel(0, initialField, player1))).get shouldBe a [RoundResultMoveOk]
-    }
-
-    "return a Failure if there was a failure while playing a round (i.e. setting the chip and checking if the game is over)" in {
-      val fullColumnField = initialField.play(0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1)
-      an [Exception] should be thrownBy GameLogic.playRound(Success(RoundModel(0, fullColumnField, player2))).get
-    }
-
-    "return a Failure if the incoming Try[RoundModel] already was a failure" in {
-      an [Exception] should be thrownBy GameLogic.playRound(Failure(new Exception("Nevermind"))).get
-    }
 
     "return true if the game is draw" in {
 

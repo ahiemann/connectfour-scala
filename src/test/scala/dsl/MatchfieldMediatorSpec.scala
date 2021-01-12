@@ -1,9 +1,9 @@
 package dsl
 
-import controllers.GameLogic
 import model.PlayerModel
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import util.GameLogic
 
 import scala.util.Try
 

@@ -1,11 +1,11 @@
 package dsl
 
-import controllers.GameLogic
 import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
 import model.{MatchfieldModel, PlayerModel}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import util.GameLogic
 
 class AutomaticMatchfieldImplicitSpec extends AnyWordSpec with Matchers {
 

@@ -20,7 +20,7 @@ class RoundModelSpec extends AnyWordSpec with should.Matchers {
 
     val roundModel = RoundModel(0, matchfield, player1)
     "have a column index" in { roundModel.columnIndex should be (0) }
-    "have an instance of a matchfield" in { roundModel.matchField should === (matchfield)}
+    "have an instance of a matchfield" in { roundModel.matchfield should === (matchfield)}
     "have an instance of a player that belongs to this round" in { roundModel.player should === (player1) }
   }
 }

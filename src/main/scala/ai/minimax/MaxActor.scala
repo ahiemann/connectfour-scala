@@ -2,8 +2,8 @@ package ai.minimax
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.ask
-import controllers.GameLogic
 import model.{MatchfieldModel, PlayerModel, RoundModel}
+import util.GameLogic
 
 import scala.concurrent.Future
 import scala.util.Success
@@ -19,7 +19,7 @@ class MaxActor extends MiniMaxActor {
   }
 
   override def spawnNewActor(columnNr: Int, matchField: MatchfieldModel[PlayerModel], aiPlayer: PlayerModel, otherPlayer: PlayerModel, depth: Int): Future[Any] = {
-    val nextMatchfield = GameLogic.setChip(Success(RoundModel(columnNr, matchField, aiPlayer))).get.matchField
+    val nextMatchfield = GameLogic.setChip(RoundModel(columnNr, matchField, aiPlayer)).get.matchfield
     context.actorOf(Props[MinActor]) ? RequestMessage(Some(columnNr), aiPlayer, otherPlayer, nextMatchfield, depth)
   }
 }

@@ -3,15 +3,14 @@ package ai.minimax
 import akka.actor._
 import akka.pattern.ask
 import akka.util.Timeout
-import controllers.GameLogic
 import model.{MatchfieldModel, PlayerModel}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
-
 import _root_.dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import _root_.dsl.GameColumnImplicit.GameColumn
+import util.GameLogic
 
 
 //Vorhersage des besten Zugs für die CPU und die möglichen Verläufe zum Sieg des menschlichen Player voraus

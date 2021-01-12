@@ -1,15 +1,14 @@
 package ai.minimax
 
 import java.util.concurrent.TimeUnit
-
 import akka.actor.TypedActor.dispatcher
 import akka.actor.{Actor, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
 import scala.language.postfixOps
-import controllers.GameLogic
 import model.{MatchfieldModel, PlayerModel, RoundModel}
+import util.GameLogic
 
 import scala.collection.IterableOnce.iterableOnceExtensionMethods
 import scala.concurrent.duration.DurationInt

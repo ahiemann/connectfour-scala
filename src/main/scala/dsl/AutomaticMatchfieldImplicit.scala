@@ -1,7 +1,7 @@
 package dsl
 
-import controllers.GameLogic
 import model.{MatchfieldModel, PlayerModel, RoundModel}
+import util.GameLogic
 
 import scala.annotation.tailrec
 import scala.util.Try
@@ -19,8 +19,8 @@ object AutomaticMatchfieldImplicit {
           matchfield
         else {
           val gameColumn = gameColumns.head
-          val resultMatchfield = GameLogic.setChip(Try(RoundModel(gameColumn.column, matchfield, gameColumn.player)))
-          setChips(resultMatchfield.get.matchField, gameColumns.tail)
+          val resultMatchfield = GameLogic.setChip(RoundModel(gameColumn.column, matchfield, gameColumn.player))
+          setChips(resultMatchfield.get.matchfield, gameColumns.tail)
         }
       }
       

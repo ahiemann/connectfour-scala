@@ -1,8 +1,8 @@
 package model
 
-import controllers.GameLogic
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpec
+import util.GameLogic
 
 class RoundResultGameOverSpec extends AnyWordSpec with should.Matchers {
   "A RoundResultGameOver" should {
