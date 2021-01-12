@@ -2,7 +2,7 @@ package util
 
 import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
-import model.{PlayerModel, RoundModel, RoundResultGameOver, RoundResultMoveOk}
+import model.{PlayerModel, RoundModel}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -19,27 +19,37 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
 
     "return an initial match field" in {
-      GameLogic.getInitialMatchField().toString should be(s"""--------------------------
-                                                              |Vector(-, -, -, -, -, -, -)
-                                                              |Vector(-, -, -, -, -, -, -)
-                                                              |Vector(-, -, -, -, -, -, -)
-                                                              |Vector(-, -, -, -, -, -, -)
-                                                              |Vector(-, -, -, -, -, -, -)
-                                                              |Vector(-, -, -, -, -, -, -)
-                                                              |---------------------------
-                                                              |      |1| 2| 3| 4| 5| 6| 7|""".stripMargin)
+      GameLogic.getInitialMatchField().toString should be(s"""|+---+---+---+---+---+---+---+
+                                                             || - | - | - | - | - | - | - |
+                                                             |+---+---+---+---+---+---+---+
+                                                             || - | - | - | - | - | - | - |
+                                                             |+---+---+---+---+---+---+---+
+                                                             || - | - | - | - | - | - | - |
+                                                             |+---+---+---+---+---+---+---+
+                                                             || - | - | - | - | - | - | - |
+                                                             |+---+---+---+---+---+---+---+
+                                                             || - | - | - | - | - | - | - |
+                                                             |+---+---+---+---+---+---+---+
+                                                             || - | - | - | - | - | - | - |
+                                                             |+---+---+---+---+---+---+---+
+                                                             |  1   2   3   4   5   6   7""".stripMargin)
     }
 
     "return an Some(MatchfieldModel(...)) with one token" in {
-      GameLogic.setChip(initialRoundModel).get.matchfield.toString should be (s"""--------------------------
-                                                                                 |Vector(-, -, -, -, -, -, -)
-                                                                                 |Vector(-, -, -, -, -, -, -)
-                                                                                 |Vector(-, -, -, -, -, -, -)
-                                                                                 |Vector(-, -, -, -, -, -, -)
-                                                                                 |Vector(-, -, -, -, -, -, -)
-                                                                                 |Vector(x, -, -, -, -, -, -)
-                                                                                 |---------------------------
-                                                                                 |      |1| 2| 3| 4| 5| 6| 7|""".stripMargin)
+      GameLogic.setChip(initialRoundModel).get.matchfield.toString should be (s"""|+---+---+---+---+---+---+---+
+                                                                                 || - | - | - | - | - | - | - |
+                                                                                 |+---+---+---+---+---+---+---+
+                                                                                 || - | - | - | - | - | - | - |
+                                                                                 |+---+---+---+---+---+---+---+
+                                                                                 || - | - | - | - | - | - | - |
+                                                                                 |+---+---+---+---+---+---+---+
+                                                                                 || - | - | - | - | - | - | - |
+                                                                                 |+---+---+---+---+---+---+---+
+                                                                                 || - | - | - | - | - | - | - |
+                                                                                 |+---+---+---+---+---+---+---+
+                                                                                 || x | - | - | - | - | - | - |
+                                                                                 |+---+---+---+---+---+---+---+
+                                                                                 |  1   2   3   4   5   6   7""".stripMargin)
     }
 
     "return a Failure if the target column was already full" in {

@@ -11,9 +11,9 @@ class Tui {
   }
 
   def outputPlayerLegend(player1:PlayerModel, player2:PlayerModel) = {
-    println(s"""--------------------------
-      |${player1.name}: ${player1.sign}
-      |${player2.name}: ${player2.sign}""".stripMargin)
+    println(s"""|${player1.name}: ${player1.sign}
+      |${player2.name}: ${player2.sign}
+      |""".stripMargin)
   }
 
   def outputNextTurn(player:PlayerModel) = {
@@ -21,7 +21,7 @@ class Tui {
   }
 
   def announceWinner(player:PlayerModel) = {
-    println(s"Player ${player.name} has won the game!")
+    println(s"Player ${player.name} (${player.sign}) has won the game!")
   }
 
   def annnounceDraw() = {

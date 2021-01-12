@@ -14,14 +14,14 @@ case class MatchfieldModel[T](rows: Vector[Vector[T]]) {
   def cell(row:Int, col:Int): T = rows(row)(col)
 
   override def toString: String = {
-    s"""|--------------------------
-      |${this.rows(5)}
-      |${this.rows(4)}
-      |${this.rows(3)}
-      |${this.rows(2)}
-      |${this.rows(1)}
-      |${this.rows(0)}
-      |---------------------------
-      |      |1| 2| 3| 4| 5| 6| 7|""".stripMargin
+    val rowDelimiter = "+---+---+---+---+---+---+---+"
+    val columnNrs = "  1   2   3   4   5   6   7"
+
+    val rowStrings = for {
+      row <- rows.reverse
+      rowString = row.mkString(s"$rowDelimiter\n| ", " | " , " |")
+    } yield(rowString)
+
+    rowStrings.mkString(s"", "\n", s"\n$rowDelimiter\n") + columnNrs
   }
 }

@@ -9,23 +9,32 @@ import scala.util.{Failure, Success, Try}
 
 class GameController(view:Tui) {
   def playRound(matchfield:MatchfieldModel[PlayerModel], player1:PlayerModel, player2:PlayerModel, currentPlayer:PlayerModel): Either[(PlayerModel, MatchfieldModel[PlayerModel]), GameOverFlag.type] = {
-    view.outputPlayerLegend(player1, player2)
     view.outputMatchfield(matchfield)
+    view.outputPlayerLegend(player1, player2)
     val column = getColumnForRound(currentPlayer)
     doRound(column, matchfield, player1, player2, currentPlayer)
   }
 
+  // TODO: Consider this https://stackoverflow.com/a/29479517 for testing
   @tailrec
   private def getColumnForRound(currentPlayer:PlayerModel) :Int = {
     view.outputNextTurn(currentPlayer)
+    val invalidInputMessage = "Invalid input. Please type the number of the column where you would like to insert your chip"
 
     // hier wäre ein Unterscheidung nach dem Typ des Player möglich: Wenn es sich um den KI Player handelt, dann wird von diesem die Spaltenzahl aufgerufen
     view.getUserInput() match {
       case Success(inputIndex) =>
-        val realIndex = inputIndex - 1
-        realIndex
+        // TODO: Remove other check in util.Gamelogic
+        if (!(1 to 7 contains inputIndex)) {
+          view.showError(invalidInputMessage)
+          getColumnForRound(currentPlayer)
+        }
+        else {
+          val realIndex = inputIndex - 1
+          realIndex
+        }
       case Failure(_) =>
-        view.showError("Wrong input. Please type the number of the column where you would like to insert your chip")
+        view.showError(invalidInputMessage)
         getColumnForRound(currentPlayer)
     }
   }
