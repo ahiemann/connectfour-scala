@@ -87,6 +87,20 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val result = controller.doRound(0, initialField, player1, player2, player1).left.getOrElse() shouldBe a [(PlayerModel, MatchfieldModel[PlayerModel])]
     }
 
+    "end because the game is a draw" in {
+      val matchfield = automaticField.play(
+        0 -> player1, 0 -> player2, 0 -> player1, 0 -> player2, 0 -> player1, 0 -> player2,
+        1 -> player1, 1 -> player2, 1 -> player1, 1 -> player2, 1 -> player1, 1 -> player2,
+        2 -> player1, 2 -> player2, 2 -> player1, 2 -> player2, 2 -> player1, 2 -> player2,
+        3 -> player2, 3 -> player1, 3 -> player2, 3 -> player1, 3 -> player2, 3 -> player1,
+        4 -> player2, 4 -> player1, 4 -> player2, 4 -> player1, 4 -> player2, 4 -> player1,
+        5 -> player1, 5 -> player2, 5 -> player1, 5 -> player2, 5 -> player1, 5 -> player2,
+        6 -> player1, 6 -> player2, 6 -> player1, 6 -> player2, 6 -> player1
+      )
+      val result = controller.doRound(6, matchfield, player1, player2, player2)
+      result.getOrElse(false) shouldBe a [GameOverFlag.type]
+    }
+
     "return a Failure if there was a failure while playing a round (i.e. setting the chip and checking if the game is over)" in {
       val fullColumnField = automaticField.play(0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1)
       controller.doRound(0, fullColumnField, player1, player2, player2).left.getOrElse() shouldBe a [(PlayerModel, MatchfieldModel[PlayerModel])]
