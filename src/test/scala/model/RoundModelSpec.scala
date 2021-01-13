@@ -6,7 +6,6 @@ import org.scalatest.wordspec.AnyWordSpec
 class RoundModelSpec extends AnyWordSpec with should.Matchers {
   "A RoundModel" should {
     val player1 = RealPlayer("Max Mustermann", 'X')
-    val player2 = RealPlayer("Erika Mustermann", 'O')
     val noPlayerPlayer = RealPlayer("NoPlayer", '-')
 
     val matchfield = MatchfieldModel(Vector[Vector[PlayerModel]](

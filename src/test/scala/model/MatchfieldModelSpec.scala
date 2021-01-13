@@ -22,7 +22,7 @@ class MatchfieldModelSpec extends AnyWordSpec with Matchers {
     "Created with matrix" should {
       "be possible to set player name and token into first column" in {
         val matchfield = new MatchfieldModel[PlayerModel](RealPlayer("NoPlayer", '-'))
-        val m = matchfield.setToken(0,0,(RealPlayer("Pascal", 'x')))
+        val m = matchfield.setToken(0,0,RealPlayer("Pascal"))
         m.rows(0)(0).name should be("Pascal")
         m.rows(0)(0).sign should be('x')
       }

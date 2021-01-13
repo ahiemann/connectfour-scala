@@ -1,7 +1,7 @@
 package dsl
 
 import dsl.GameColumnImplicit.GameColumn
-import model.{PlayerModel, RealPlayer}
+import model.RealPlayer
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

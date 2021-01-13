@@ -5,21 +5,21 @@ import util.GameLogic
 import view.Tui
 
 import scala.annotation.tailrec
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 
 class GameController(view:Tui) {
   @tailrec
   final def startGame() :(PlayerModel, PlayerModel, MatchfieldModel[PlayerModel])= {
     view.showStart()
-    val matchfield = GameLogic.getInitialMatchField()
+    val matchfield = GameLogic.getInitialMatchField
 
-    view.getUserInputInt() match {
+    view.getUserInputInt match {
       case Success(mode) =>
         if (1 to 2 contains mode) {
           val player1Name = getPlayerName(1)
-          val player1 = RealPlayer(player1Name, 'x')
+          val player1 = RealPlayer(player1Name)
           val player2 = if (mode == 1) {
-            AIPlayer(sign = 'o')
+            AIPlayer()
           } else {
             val player2Name = getPlayerName(2)
             RealPlayer(player2Name, 'o')
@@ -31,7 +31,7 @@ class GameController(view:Tui) {
           view.showError("Invalid mode selected")
           startGame()
         }
-      case Failure(e) =>
+      case Failure(_) =>
         view.showError("Invalid input for game mode selection")
         startGame()
     }
@@ -39,7 +39,7 @@ class GameController(view:Tui) {
 
   private def getPlayerName(playerNr : Int):String = {
     view.askForPlayerName(playerNr)
-    view.getUserInputString()
+    view.getUserInputString
   }
 
   def playRound(matchfield:MatchfieldModel[PlayerModel], player1:PlayerModel, player2:PlayerModel, currentPlayer:PlayerModel): Either[(PlayerModel, MatchfieldModel[PlayerModel]), GameOverFlag.type] = {
@@ -56,13 +56,13 @@ class GameController(view:Tui) {
     val invalidInputMessage = "Invalid input. Please type the number of the column where you would like to insert your chip"
 
     currentPlayer match {
-      case p:AIPlayer => p.getNextColumn(opponent, currentMatchfield, 2)
+      case p:AIPlayer => p.getNextColumn(opponent, currentMatchfield)
 
       case realPlayer =>
         view.outputNextTurn(currentPlayer)
-        view.getUserInputInt() match {
+        view.getUserInputInt match {
         case Success(inputIndex) =>
-          // TODO: Remove other check in util.Gamelogic
+
           if (1 to 7 contains inputIndex) {
             val realIndex = inputIndex - 1
             realIndex

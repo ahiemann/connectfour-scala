@@ -1,19 +1,14 @@
 package ai.minimax
 
-import java.util.concurrent.TimeUnit
-import akka.actor.TypedActor.dispatcher
-import akka.actor.{Actor, Props}
-import akka.pattern.ask
+import akka.actor.Actor
 import akka.util.Timeout
 
 import scala.language.postfixOps
-import model.{MatchfieldModel, PlayerModel, RoundModel}
+import model.{MatchfieldModel, PlayerModel}
 import util.GameLogic
 
-import scala.collection.IterableOnce.iterableOnceExtensionMethods
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
-import scala.util.{Failure, Success}
 
 trait MiniMaxActor extends Actor{
 
@@ -49,7 +44,7 @@ trait MiniMaxActor extends Actor{
 
           columnNr match {
             // not at the root node yet, overwrite columnNr of best score and send to next level
-            case Some(c) => sender ! ResponseMessage(columnNr, bestOption.score)
+            case Some(_) => sender ! ResponseMessage(columnNr, bestOption.score)
             // we are at the root actor, simply forward
             case None => sender ! bestOption
           }

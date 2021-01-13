@@ -1,6 +1,6 @@
 package dsl
 
-import model.{PlayerModel, RealPlayer}
+import model.RealPlayer
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 

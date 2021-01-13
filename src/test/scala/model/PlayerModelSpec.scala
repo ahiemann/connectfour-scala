@@ -1,7 +1,6 @@
 package model
 
 import org.scalatest._
-import flatspec._
 import matchers._
 import org.scalatest.wordspec.AnyWordSpec
 

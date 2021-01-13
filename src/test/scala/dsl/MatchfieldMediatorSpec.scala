@@ -1,6 +1,6 @@
 package dsl
 
-import model.{PlayerModel, RealPlayer}
+import model.RealPlayer
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import util.GameLogic
@@ -12,7 +12,7 @@ class MatchfieldMediatorSpec extends AnyWordSpec with Matchers {
   "A MatchfieldMediator instance" should {
     val player = RealPlayer("Max Mustermann", 'O')
 
-    val matchfield = GameLogic.getInitialMatchField()
+    val matchfield = GameLogic.getInitialMatchField
     val matchfieldMediator = new MatchfieldMediator(1, player)
 
     "return a Try of a RoundModel object when the ofMatchfield function is called" in  {

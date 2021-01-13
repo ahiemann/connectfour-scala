@@ -1,6 +1,6 @@
 package ai.minimax
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import model.{AIPlayer, MatchfieldModel, PlayerModel, RealPlayer}
@@ -14,13 +14,13 @@ import scala.concurrent.Await
 
 class MiniMaxActorSpec extends AnyWordSpec{
 
-    val system = ActorSystem("AISystem")
-    val actor = system.actorOf(Props[MaxActor], "MaxActor")
+    val system: ActorSystem = ActorSystem("AISystem")
+    val actor: ActorRef = system.actorOf(Props[MaxActor], "MaxActor")
 
-    val playerAI = AIPlayer("Computer")
-    val playerHuman = RealPlayer("Human", 'O')
-    val noPlayer = RealPlayer("NoPlayer", '-')
-    val matchfield = MatchfieldModel[PlayerModel](Vector(Vector(playerHuman,playerAI,playerHuman,playerAI,playerHuman,playerAI,playerAI),Vector(playerAI,playerHuman,playerHuman,playerAI,playerHuman,playerHuman,playerAI),Vector(playerHuman,playerHuman,playerAI,playerHuman,playerHuman,playerAI,playerHuman),Vector(playerHuman,playerHuman,playerAI,playerHuman,playerAI,playerAI,playerAI),Vector(playerHuman,playerAI,noPlayer,playerHuman,playerHuman,playerAI,playerAI),Vector(playerAI,playerHuman,noPlayer,noPlayer,noPlayer,noPlayer,noPlayer)))
+    val playerAI: AIPlayer = AIPlayer()
+    val playerHuman: RealPlayer = RealPlayer("Human", 'O')
+    val noPlayer: RealPlayer = RealPlayer("NoPlayer", '-')
+    val matchfield: MatchfieldModel[PlayerModel] = MatchfieldModel[PlayerModel](Vector(Vector(playerHuman,playerAI,playerHuman,playerAI,playerHuman,playerAI,playerAI),Vector(playerAI,playerHuman,playerHuman,playerAI,playerHuman,playerHuman,playerAI),Vector(playerHuman,playerHuman,playerAI,playerHuman,playerHuman,playerAI,playerHuman),Vector(playerHuman,playerHuman,playerAI,playerHuman,playerAI,playerAI,playerAI),Vector(playerHuman,playerAI,noPlayer,playerHuman,playerHuman,playerAI,playerAI),Vector(playerAI,playerHuman,noPlayer,noPlayer,noPlayer,noPlayer,noPlayer)))
     implicit val timeout: Timeout = Timeout(2 seconds)
 
     "receive an Answer from the request message" in {

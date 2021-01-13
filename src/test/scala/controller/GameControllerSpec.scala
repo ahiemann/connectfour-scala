@@ -13,11 +13,11 @@ import java.io.ByteArrayInputStream
 class GameControllerSpec extends AnyWordSpec with Matchers {
   "The GameController" should {
     val controller = new GameController(new Tui)
-    val initialField = GameLogic.getInitialMatchField()
+    val initialField = GameLogic.getInitialMatchField
     val automaticField = new AutomaticMatchfield(initialField)
-    val player1 = RealPlayer("Max Mustermann", 'x')
+    val player1 = RealPlayer("Max Mustermann")
     val player2 = RealPlayer("Erika Mustermann", 'o')
-    val aiPlayer = AIPlayer("AI", 'o')
+    val aiPlayer = AIPlayer("AI")
 
     "return a initial matchfield, a real players and an AI player if game mode 1 was selected (including two invalid inputs)" in {
       val stdinString ="""
@@ -84,7 +84,9 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "return a Either Left with the next player and current state of the matchfield if the game is not over yet" in {
-      val result = controller.doRound(0, initialField, player1, player2, player1).left.getOrElse() shouldBe a [(PlayerModel, MatchfieldModel[PlayerModel])]
+      val result = controller.doRound(0, initialField, player1, player2, player1).left.getOrElse().asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]
+      result._1 shouldBe a [PlayerModel]
+      result._2 shouldBe a [MatchfieldModel[_]]
     }
 
     "end because the game is a draw" in {
@@ -103,7 +105,9 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     "return a Failure if there was a failure while playing a round (i.e. setting the chip and checking if the game is over)" in {
       val fullColumnField = automaticField.play(0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1)
-      controller.doRound(0, fullColumnField, player1, player2, player2).left.getOrElse() shouldBe a [(PlayerModel, MatchfieldModel[PlayerModel])]
+      val result = controller.doRound(0, fullColumnField, player1, player2, player2).left.getOrElse().asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]
+      result._1 shouldBe a [PlayerModel]
+      result._2 shouldBe a [MatchfieldModel[_]]
     }
   }
 }

@@ -1,7 +1,7 @@
 package util
 
 import dsl.GameColumnImplicit.GameColumn
-import model.{PlayerModel, RealPlayer, RoundModel}
+import model.{RealPlayer, RoundModel}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -9,9 +9,9 @@ import scala.util.{Failure, Success}
 
 class GameLogicSpec extends AnyWordSpec with Matchers {
   "The GameLogic" should {
-    val initialField = GameLogic.getInitialMatchField()
+    val initialField = GameLogic.getInitialMatchField
     val automaticField = new AutomaticMatchfield(initialField)
-    val player1 = RealPlayer("Max Mustermann", 'x')
+    val player1 = RealPlayer("Max Mustermann")
     val player2 = RealPlayer("Erika Mustermann", 'o')
     val player3 = RealPlayer("Hans Peter", 'o')
     val noPlayerPlayer = RealPlayer("NoPlayer", '-')
@@ -19,7 +19,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
 
     "return an initial match field" in {
-      GameLogic.getInitialMatchField().toString should be(s"""|+---+---+---+---+---+---+---+
+      GameLogic.getInitialMatchField.toString should be(s"""|+---+---+---+---+---+---+---+
                                                              || - | - | - | - | - | - | - |
                                                              |+---+---+---+---+---+---+---+
                                                              || - | - | - | - | - | - | - |
@@ -94,19 +94,8 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
        an [Exception] should be thrownBy GameLogic.getNextEmptyRow(10, initialField)
     }
 
-    "return a new Player with Name and sign" in {
-      GameLogic.getInitialPlayerModel("Pascal", 'x').name should be ("Pascal")
-    }
-
     "return with an empty list the value false" in {
       GameLogic.checkIfSomeoneWon(initialField, player1) should be (false)
-    }
-
-    "return an string output from matchfield" in {
-      val players = Vector[PlayerModel](player1, player2)
-      val currentMatchField = automaticField.play(
-        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1)
-      GameLogic.getMatchfieldOutput(players, currentMatchField) should be ("------- Connect Four  -------\n| Max Mustermann : x\n| Erika Mustermann : o\n--------------------------\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(x, o, x, o, x, o, x)\n---------------------------\n      |1| 2| 3| 4| 5| 6| 7|")
     }
 
     "return the last free row for token" in {

@@ -1,5 +1,5 @@
 import controller.GameController
-import model.{GameOverFlag, RealPlayer}
+import model.RealPlayer
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import util.GameLogic
@@ -9,9 +9,9 @@ import java.io.ByteArrayInputStream
 
 class MainSpec extends AnyWordSpec with Matchers {
   "The Connect4 programm" should {
-    val player1 = RealPlayer("Max", 'x')
+    val player1 = RealPlayer("Max")
     val player2 = RealPlayer("Tom", 'o')
-    val matchfield = GameLogic.getInitialMatchField()
+    val matchfield = GameLogic.getInitialMatchField
     val view = new Tui()
     val controller = new GameController(view)
 

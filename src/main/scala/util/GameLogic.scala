@@ -6,25 +6,19 @@ import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 object GameLogic {
-  /**
-    * Check if a player has 4 chips in one row, column or diagonal
-    *
-    * @param matchfield
-    * @param player
-    * @return Option with the boolean if the game is won or None
-    */
+
   def checkIfSomeoneWon(matchfield: MatchfieldModel[PlayerModel], player: PlayerModel): Boolean = {
     val rows = matchfield.rows.map(_.map(_.name))
     val list = rows.map(_.map(_.equals(player.name))).toList
 
     def fourInColumn(): Boolean = {
-      val resultList = list.transpose.map(x => isSuccessively(x.toList, 3)).filter(_ == true)
-      if (resultList contains (true)) true else false
+      val resultList = list.transpose.map(x => isSuccessively(x, 3)).filter(_ == true)
+      if (resultList contains true) true else false
     }
 
     def fourInRow(): Boolean = {
       val resultList = list.map(x => isSuccessively(x.toList, 3)).filter(_ == true)
-      if (resultList contains (true)) true else false
+      if (resultList contains true) true else false
     }
 
     def fourDiagonalFromXTop(): Boolean = {
@@ -52,7 +46,7 @@ object GameLogic {
 
     (currentSymbol, tail.headOption) match {
       case (Some(current), Some(next)) =>
-        if (current == true) { // If current symbol is from selected player (true)
+        if (current) { // If current symbol is from selected player (true)
           if (current == next) {
             val max = if (successivelyCount >= maxCount) successivelyCount + 1 else maxCount
             numberOfSuccessivelySymbols(tail, successivelyCount = successivelyCount + 1, maxCount = max) // If found next equal symbol
@@ -87,28 +81,8 @@ object GameLogic {
     )
   }
 
-  def getInitialMatchField() = {
-    new MatchfieldModel[PlayerModel](new RealPlayer("NoPlayer", '-'))
-  }
-
-  // TODO: Doesn't seem to be used?!
-  def getInitialPlayerModel(name: String, sign: Char) = {
-    RealPlayer(name, sign)
-  }
-
-  def getMatchfieldOutput(players: Vector[PlayerModel], matrix: MatchfieldModel[PlayerModel]) = {
-    ("------- Connect Four  -------\n" +
-      "| " + players(0).name + " : " + players(0).sign + "\n" +
-      "| " + players(1).name + " : " + players(1).sign + "\n" +
-      "--------------------------" + "\n" +
-      matrix.rows(5) + "\n" +
-      matrix.rows(4) + "\n" +
-      matrix.rows(3) + "\n" +
-      matrix.rows(2) + "\n" +
-      matrix.rows(1) + "\n" +
-      matrix.rows(0) + "\n" +
-      "---------------------------" + "\n" +
-      "      |1| 2| 3| 4| 5| 6| 7|")
+  def getInitialMatchField: MatchfieldModel[PlayerModel] = {
+    new MatchfieldModel[PlayerModel](RealPlayer("NoPlayer", '-'))
   }
 
   def setChip(roundData: RoundModel): Try[RoundModel] = {
@@ -146,8 +120,6 @@ object GameLogic {
   }
 
   def getNextEmptyRow(column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {
-
-    if (!(0 to 6 contains column)) throw new Exception("Invalid column")
 
     @tailrec
     def getNextEmptyRow(rowIndex: Int, column: Int, matchField: MatchfieldModel[PlayerModel]): Option[Int] = {

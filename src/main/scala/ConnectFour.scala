@@ -1,6 +1,5 @@
 import controller.GameController
 import model.{GameOverFlag, MatchfieldModel, PlayerModel}
-import util.GameLogic
 import view.Tui
 
 import scala.annotation.tailrec

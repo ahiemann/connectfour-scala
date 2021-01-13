@@ -1,16 +1,14 @@
 package ai.minimax
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.Props
 import akka.pattern.ask
 import model.{MatchfieldModel, PlayerModel, RoundModel}
 import util.GameLogic
 
 import scala.concurrent.Future
-import scala.util.Success
 
 
 class MaxActor extends MiniMaxActor {
-  //println("New MaxActor")
 
   override def makeScoreBasedChoice(choices: List[ResponseMessage]): ResponseMessage = choices.maxBy(_.score)
 
