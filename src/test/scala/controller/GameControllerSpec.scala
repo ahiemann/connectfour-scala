@@ -1,6 +1,6 @@
 package controller
 
-import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
+import util.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
 import model.{AIPlayer, GameOverFlag, MatchfieldModel, PlayerModel, RealPlayer}
 import org.scalatest.matchers.should.Matchers
@@ -14,6 +14,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
   "The GameController" should {
     val controller = new GameController(new Tui)
     val initialField = GameLogic.getInitialMatchField()
+    val automaticField = new AutomaticMatchfield(initialField)
     val player1 = RealPlayer("Max Mustermann", 'x')
     val player2 = RealPlayer("Erika Mustermann", 'o')
     val aiPlayer = AIPlayer("AI", 'o')
@@ -78,7 +79,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
 
     "return a GameOverFlag that indicates the game is over for some reason" in {
-      val matchfieldWithWinner = initialField.play(0 -> player1, 1 -> player1, 2 -> player1)
+      val matchfieldWithWinner = automaticField.play(0 -> player1, 1 -> player1, 2 -> player1)
       controller.doRound(3, matchfieldWithWinner, player1, player2, player1).getOrElse(false) shouldBe a [GameOverFlag.type]
     }
 
@@ -87,7 +88,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "return a Failure if there was a failure while playing a round (i.e. setting the chip and checking if the game is over)" in {
-      val fullColumnField = initialField.play(0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1)
+      val fullColumnField = automaticField.play(0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1)
       controller.doRound(0, fullColumnField, player1, player2, player2).left.getOrElse() shouldBe a [(PlayerModel, MatchfieldModel[PlayerModel])]
     }
   }
