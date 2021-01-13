@@ -5,6 +5,7 @@ import ai.minimax.{MaxActor, RequestMessage, ResponseMessage}
 import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
+import scala.language.postfixOps
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
