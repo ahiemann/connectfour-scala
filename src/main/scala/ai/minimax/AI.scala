@@ -3,7 +3,7 @@ package ai.minimax
 import akka.actor._
 import akka.pattern.ask
 import akka.util.Timeout
-import model.{MatchfieldModel, PlayerModel}
+import model.{AIPlayer, MatchfieldModel, PlayerModel, RealPlayer}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -19,9 +19,9 @@ object Main extends App {
   val system = ActorSystem("AISystem")
   val actor = system.actorOf(Props[MaxActor], "MaxActor")
 
-  val playerAI = PlayerModel("Computer")
-  val playerHuman = PlayerModel("Human", 'O')
-  val noPlayer = PlayerModel("NoPlayer", '-')
+  val playerAI = AIPlayer("Computer")
+  val playerHuman = RealPlayer("Human", 'O')
+  val noPlayer = RealPlayer("NoPlayer", '-')
   val matchfield = MatchfieldModel(Vector(
     Vector(playerHuman,playerAI,playerHuman,playerAI,playerHuman,playerAI,playerAI),
     Vector(playerAI,playerHuman,playerHuman,playerAI,playerHuman,playerHuman,playerAI),

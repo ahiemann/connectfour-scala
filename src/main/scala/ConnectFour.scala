@@ -7,11 +7,16 @@ import scala.annotation.tailrec
 
 object ConnectFour {
   def main(args: Array[String]): Unit = {
-    val startField = GameLogic.getInitialMatchField() // initiales Feld
-    val player1 = PlayerModel(args(0), 'x')
-    val player2 = PlayerModel(args(1), 'o')
+    //val startField = GameLogic.getInitialMatchField() // initiales Feld
+    //val player1 = PlayerModel(args(0), 'x')
+    // val player2 = PlayerModel(args(1), 'o')
     val view = new Tui()
     val controller = new GameController(view)
+    val models = controller.startGame()
+    val player1 = models._1
+    val player2 = models._2
+    val startField = models._3
+
     val startPlayer = if (scala.util.Random.nextInt(2) == 0) player1 else player2
 
     @tailrec

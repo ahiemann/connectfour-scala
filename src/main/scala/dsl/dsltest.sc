@@ -3,12 +3,12 @@
 import dsl.Insert
 import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
-import model.PlayerModel
+import model.{PlayerModel, RealPlayer}
 import util.GameLogic
 
 
-val player1 = PlayerModel("Max Mustermann", 'X')
-val player2 = PlayerModel("Tom Blabla", 'O')
+val player1 = RealPlayer("Max Mustermann", 'X')
+val player2 = RealPlayer("Tom Blabla", 'O')
 
 val matchfield = GameLogic.getInitialMatchField()
 

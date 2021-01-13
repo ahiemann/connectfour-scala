@@ -6,6 +6,19 @@ import scala.io.StdIn
 import scala.util.Try
 
 class Tui {
+  def showStart()= {
+    println(
+      """Welcome to Connect 4!
+        |
+        |Please select game mode:
+        |1) Single Player
+        |2) Multi Player
+        |""".stripMargin)
+  }
+  def askForPlayerName(playerNr:Int) = {
+    println(s"Please provide name for player ${playerNr}:")
+  }
+
   def outputMatchfield(field:MatchfieldModel[PlayerModel]) = {
     println(field)
   }
@@ -32,7 +45,7 @@ class Tui {
     println(msg)
   }
 
-  def getUserInput() :Try[Int] = {
-    Try(StdIn.readInt())
-  }
+  def getUserInputInt() :Try[Int] = Try(StdIn.readInt())
+
+  def getUserInputString() :Try[String] = Try(StdIn.readLine())
 }

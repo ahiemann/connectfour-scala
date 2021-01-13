@@ -20,7 +20,7 @@ case class MatchfieldModel[T](rows: Vector[Vector[T]]) {
     val rowStrings = for {
       row <- rows.reverse
       rowString = row.mkString(s"$rowDelimiter\n| ", " | " , " |")
-    } yield(rowString)
+    } yield rowString
 
     rowStrings.mkString(s"", "\n", s"\n$rowDelimiter\n") + columnNrs
   }

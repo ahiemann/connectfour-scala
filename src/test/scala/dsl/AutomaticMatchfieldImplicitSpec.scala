@@ -2,7 +2,7 @@ package dsl
 
 import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
-import model.{MatchfieldModel, PlayerModel}
+import model.{MatchfieldModel, PlayerModel, RealPlayer}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import util.GameLogic
@@ -10,7 +10,7 @@ import util.GameLogic
 class AutomaticMatchfieldImplicitSpec extends AnyWordSpec with Matchers {
 
   "An AutomaticMatchfield" should {
-    val player1 = PlayerModel("Max Mustermann", 'O')
+    val player1 = RealPlayer("Max Mustermann", 'O')
     val initialMatchfield = GameLogic.getInitialMatchField()
 
     "convert a MatchfieldModel instance to an instance of the implicit AutomaticMatchfield class" in {

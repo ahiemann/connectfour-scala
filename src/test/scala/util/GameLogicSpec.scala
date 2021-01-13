@@ -2,7 +2,7 @@ package util
 
 import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
-import model.{PlayerModel, RoundModel}
+import model.{PlayerModel, RealPlayer, RoundModel}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -11,10 +11,10 @@ import scala.util.{Failure, Success}
 class GameLogicSpec extends AnyWordSpec with Matchers {
   "The GameLogic" should {
     val initialField = GameLogic.getInitialMatchField()
-    val player1 = PlayerModel("Max Mustermann", 'x')
-    val player2 = PlayerModel("Erika Mustermann", 'o')
-    val player3 = PlayerModel("Hans Peter", 'o')
-    val noPlayerPlayer = PlayerModel("NoPlayer", '-')
+    val player1 = RealPlayer("Max Mustermann", 'x')
+    val player2 = RealPlayer("Erika Mustermann", 'o')
+    val player3 = RealPlayer("Hans Peter", 'o')
+    val noPlayerPlayer = RealPlayer("NoPlayer", '-')
     val initialRoundModel = RoundModel(0, initialField, player1)
 
 

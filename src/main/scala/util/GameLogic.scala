@@ -1,6 +1,6 @@
 package util
 
-import model.{MatchfieldModel, PlayerModel, RoundModel}
+import model.{MatchfieldModel, PlayerModel, RealPlayer, RoundModel}
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
@@ -88,11 +88,12 @@ object GameLogic {
   }
 
   def getInitialMatchField() = {
-    new MatchfieldModel[PlayerModel](new PlayerModel("NoPlayer", '-'))
+    new MatchfieldModel[PlayerModel](new RealPlayer("NoPlayer", '-'))
   }
 
+  // TODO: Doesn't seem to be used?!
   def getInitialPlayerModel(name: String, sign: Char) = {
-    new PlayerModel(name, sign)
+    RealPlayer(name, sign)
   }
 
   def getMatchfieldOutput(players: Vector[PlayerModel], matrix: MatchfieldModel[PlayerModel]) = {

@@ -1,8 +1,9 @@
 package extDsl
 
 import dsl.GameColumnPlayerMapping
+
 import scala.language.postfixOps
-import model.{Connect4Model, PlayerModel}
+import model.{Connect4Model, PlayerModel, RealPlayer}
 
 import scala.util.parsing.combinator.RegexParsers
 
@@ -35,7 +36,7 @@ class Connect4Parser extends RegexParsers {
       "has name" ~ name ~
       "and symbol" ~ symbol ^^ {
       case _ ~ _ ~ _ ~ n ~ _ ~ s =>
-        PlayerModel(n, s)
+        RealPlayer(n, s)
     }
 
   private def rounds: Parser[List[(Int, Int)]] = multipleRounds | oneOrNoRound
