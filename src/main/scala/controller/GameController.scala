@@ -37,15 +37,9 @@ class GameController(view:Tui) {
     }
   }
 
-  @tailrec
   private def getPlayerName(playerNr : Int):String = {
     view.askForPlayerName(playerNr)
-    view.getUserInputString() match {
-      case Success(name) => name
-      case Failure(exception) =>
-        view.showError("Invalid input for player name!")
-        getPlayerName(playerNr)
-    }
+    view.getUserInputString()
   }
 
   def playRound(matchfield:MatchfieldModel[PlayerModel], player1:PlayerModel, player2:PlayerModel, currentPlayer:PlayerModel): Either[(PlayerModel, MatchfieldModel[PlayerModel]), GameOverFlag.type] = {
