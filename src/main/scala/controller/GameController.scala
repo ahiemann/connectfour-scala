@@ -50,7 +50,6 @@ class GameController(view:Tui) {
     doRound(column, matchfield, player1, player2, currentPlayer)
   }
 
-  // TODO: Consider this https://stackoverflow.com/a/29479517 for testing
   @tailrec
   private def getColumnForRound(currentPlayer:PlayerModel, opponent:PlayerModel, currentMatchfield:MatchfieldModel[PlayerModel]) :Int = {
     val invalidInputMessage = "Invalid input. Please type the number of the column where you would like to insert your chip"

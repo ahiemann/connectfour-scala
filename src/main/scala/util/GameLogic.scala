@@ -40,7 +40,7 @@ object GameLogic {
   }
 
   @tailrec
-  private def numberOfSuccessivelySymbols(list: List[Boolean], successivelyCount: Int = 0, maxCount: Int = 0): Int = {
+  def numberOfSuccessivelySymbols(list: List[Boolean], successivelyCount: Int = 0, maxCount: Int = 0): Int = {
     val currentSymbol = if (list.nonEmpty) list.headOption else List(false)
     val tail = if (list.nonEmpty) list.tail else List(false)
 

@@ -19,7 +19,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
 
 
     "return an initial match field" in {
-      GameLogic.getInitialMatchField.toString should be(s"""|+---+---+---+---+---+---+---+
+      GameLogic.getInitialMatchField.toString should be (s"""|+---+---+---+---+---+---+---+
                                                              || - | - | - | - | - | - | - |
                                                              |+---+---+---+---+---+---+---+
                                                              || - | - | - | - | - | - | - |
@@ -56,13 +56,6 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       val columnFullField = automaticField.play(0 -> player1, 0 -> player2, 0 -> player1, 0 -> player2,0 -> player1, 0 -> player2)
       an [Exception] should be thrownBy GameLogic.setChip(RoundModel(0, columnFullField, player1)).get
     }
-
-    // TODO: Check if the follwing test can be replaced or if it is necessary in general
-    /*
-    "return a Failure if the incoming Try[RoundResult] already was a Failure" in {
-      an [Exception] should be thrownBy GameLogic.setChip(new Exception("Nevermind")).get
-    }
-    */
 
     "return a failure if a invalid column to insert the chip was selected" in {
       an [Exception] should be thrownBy GameLogic.setChip(RoundModel(42, initialField, player1)).get
@@ -109,7 +102,10 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       GameLogic.getNextEmptyRow(column, round5matchField) should be (Some(5))
     }
 
-
+    "return false if the symbol list is empty" in {
+      val list : List[Boolean] = List()
+      GameLogic.numberOfSuccessivelySymbols(list,0,0) should be (0)
+    }
 
     "return true if the game is draw" in {
 
