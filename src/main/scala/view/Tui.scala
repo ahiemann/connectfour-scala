@@ -47,5 +47,5 @@ class Tui {
 
   def getUserInputInt() :Try[Int] = Try(StdIn.readInt())
 
-  def getUserInputString() :Try[String] = Try(StdIn.readLine())
+  def getUserInputString() :String = StdIn.readLine()
 }
