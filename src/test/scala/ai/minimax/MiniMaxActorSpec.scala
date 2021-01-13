@@ -1,6 +1,5 @@
 package ai.minimax
 
-import ai.minimax.Main.{actor, matchfield, playerAI, playerHuman}
 import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout

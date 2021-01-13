@@ -1,6 +1,5 @@
 package model
 
-import ai.minimax.Main.{actor, future, initialMatchfield, playerAI, playerHuman, timeout}
 import ai.minimax.{MaxActor, RequestMessage, ResponseMessage}
 import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
