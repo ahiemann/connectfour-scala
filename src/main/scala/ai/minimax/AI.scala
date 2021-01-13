@@ -42,7 +42,8 @@ object Main extends App {
   val future = actor ? RequestMessage(None, playerAI, playerHuman, initialMatchfield, 2)
 
   val result = Await.result(future, timeout.duration)
-  println("Optimaler Zug zum Sieg der CPU: " + result)
+  val column = result.asInstanceOf[ResponseMessage].columnNr.get
+  println("Optimaler Zug zum Sieg der CPU: " + column)
 
 }
 

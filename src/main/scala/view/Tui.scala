@@ -30,11 +30,11 @@ class Tui {
   }
 
   def outputNextTurn(player:PlayerModel) = {
-    println(s"Player ${player.name}, where do you want to put the chip?")
+    println(s"${player.name}, where do you want to put the chip?")
   }
 
   def announceWinner(player:PlayerModel) = {
-    println(s"Player ${player.name} (${player.sign}) has won the game!")
+    println(s"${player.name} (${player.sign}) has won the game!")
   }
 
   def annnounceDraw() = {
