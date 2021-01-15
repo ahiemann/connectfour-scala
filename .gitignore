@@ -5,6 +5,8 @@
 .metals
 .vscode
 project/.bloop
+.bloop
+metals.sbt
 /target
 
 
