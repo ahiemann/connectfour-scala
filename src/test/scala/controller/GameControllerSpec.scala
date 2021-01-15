@@ -1,7 +1,7 @@
 package controller
 
 import util.AutomaticMatchfield
-import dsl.GameColumnImplicit.GameColumn
+import dsl.GameColumnImplicit._
 import model.{GameOverFlag, MatchfieldModel, PlayerModel, RealPlayer}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -38,7 +38,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val stdin = new ByteArrayInputStream(stdinString.getBytes)
       Console.withIn(stdin) {
         val result = controller.playRound(initialField, player1, player2, player1)
-        val tupel = result.left.getOrElse().asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]
+        val tupel = result.left.getOrElse("").asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]
         tupel._1.sign shouldEqual 'o'  // next player: player2
         tupel._2.cell(0, 1).sign shouldEqual 'x' // set by player1
       }
@@ -50,7 +50,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "return a Either Left with the next player and current state of the matchfield if the game is not over yet" in {
-      val result = controller.doRound(0, initialField, player1, player2, player1).left.getOrElse().asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]
+      val result = controller.doRound(0, initialField, player1, player2, player1).left.getOrElse("").asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]
       result._1 shouldBe a [PlayerModel]
       result._2 shouldBe a [MatchfieldModel[_]]
     }
@@ -71,7 +71,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     "return a Failure if there was a failure while playing a round (i.e. setting the chip and checking if the game is over)" in {
       val fullColumnField = automaticField.play(0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1)
-      val result = controller.doRound(0, fullColumnField, player1, player2, player2).left.getOrElse().asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]
+      val result = controller.doRound(0, fullColumnField, player1, player2, player2).left.getOrElse("").asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]
       result._1 shouldBe a [PlayerModel]
       result._2 shouldBe a [MatchfieldModel[_]]
     }

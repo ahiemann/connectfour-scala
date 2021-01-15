@@ -7,8 +7,7 @@ import scala.io.StdIn
 import scala.annotation.tailrec
 import scala.annotation.Annotation
 
-object Test extends App {
-  def connectFour : Unit =
+  @main def connectFour : Unit =
     val view = new Tui()
     val controller = new GameController(view)
     val models = controller.startGame()
@@ -28,7 +27,7 @@ object Test extends App {
         val newMatchfield = roundSuccessful._2
         playRound(view, controller, newMatchfield, player1, player2, nextPlayer)
       case Right(GameOverFlag) => true // Game Over
-}
+
 
     
 
