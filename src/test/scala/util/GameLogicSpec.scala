@@ -1,49 +1,71 @@
-package controllers
+package util
 
-import dsl.AutomaticMatchfieldImplicit.AutomaticMatchfield
 import dsl.GameColumnImplicit.GameColumn
-import model.{PlayerModel, RoundModel, RoundResultGameOver, RoundResultMoveOk}
-import org.scalatest.wordspec.AnyWordSpec
+import model.{RealPlayer, RoundModel}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.util.{Failure, Success}
 
 class GameLogicSpec extends AnyWordSpec with Matchers {
   "The GameLogic" should {
-    val initialField = GameLogic.getInitialMatchField()
-    val player1 = PlayerModel("Max Mustermann", 'x')
-    val player2 = PlayerModel("Erika Mustermann", 'o')
-    val player3 = PlayerModel("Hans Peter", 'o')
-    val noPlayerPlayer = PlayerModel("NoPlayer", '-')
-    val initialRoundModel = Success(RoundModel(0, initialField, player1))
+    val initialField = GameLogic.getInitialMatchField
+    val automaticField = new AutomaticMatchfield(initialField)
+    val player1 = RealPlayer("Max Mustermann")
+    val player2 = RealPlayer("Erika Mustermann", 'o')
+    val player3 = RealPlayer("Hans Peter", 'o')
+    val noPlayerPlayer = RealPlayer("NoPlayer", '-')
+    val initialRoundModel = RoundModel(0, initialField, player1)
 
 
     "return an initial match field" in {
-      GameLogic.getInitialMatchField().toString should be("MatchfieldModel(Vector(Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      GameLogic.getInitialMatchField.toString should be ("+---+---+---+---+---+---+---+\n" +
+                                                         "| - | - | - | - | - | - | - |\n" +
+                                                         "+---+---+---+---+---+---+---+\n" +
+                                                         "| - | - | - | - | - | - | - |\n" +
+                                                         "+---+---+---+---+---+---+---+\n" +
+                                                         "| - | - | - | - | - | - | - |\n" +
+                                                         "+---+---+---+---+---+---+---+\n" +
+                                                         "| - | - | - | - | - | - | - |\n" +
+                                                         "+---+---+---+---+---+---+---+\n" +
+                                                         "| - | - | - | - | - | - | - |\n" +
+                                                         "+---+---+---+---+---+---+---+\n" +
+                                                         "| - | - | - | - | - | - | - |\n" +
+                                                         "+---+---+---+---+---+---+---+\n" +
+                                                         "  1   2   3   4   5   6   7")
     }
 
     "return an Some(MatchfieldModel(...)) with one token" in {
-      GameLogic.setChip(initialRoundModel).get.matchField.toString should be ("MatchfieldModel(Vector(Vector(x, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -), Vector(-, -, -, -, -, -, -)))")
+      GameLogic.setChip(initialRoundModel).get.matchfield.toString should be ("+---+---+---+---+---+---+---+\n" +
+                                                                              "| - | - | - | - | - | - | - |\n" +
+                                                                              "+---+---+---+---+---+---+---+\n" +
+                                                                              "| - | - | - | - | - | - | - |\n" +
+                                                                              "+---+---+---+---+---+---+---+\n" +
+                                                                              "| - | - | - | - | - | - | - |\n" +
+                                                                              "+---+---+---+---+---+---+---+\n" +
+                                                                              "| - | - | - | - | - | - | - |\n" +
+                                                                              "+---+---+---+---+---+---+---+\n" +
+                                                                              "| - | - | - | - | - | - | - |\n" +
+                                                                              "+---+---+---+---+---+---+---+\n" +
+                                                                              "| x | - | - | - | - | - | - |\n" +
+                                                                              "+---+---+---+---+---+---+---+\n" +
+                                                                              "  1   2   3   4   5   6   7")
     }
 
     "return a Failure if the target column was already full" in {
-      val columnFullField = initialField.play(0 -> player1, 0 -> player2, 0 -> player1, 0 -> player2,0 -> player1, 0 -> player2)
-      an [Exception] should be thrownBy GameLogic.setChip(Success(RoundModel(0, columnFullField, player1))).get
-    }
-
-    "return a Failure if the incoming Try[RoundResult] already was a Failure" in {
-      an [Exception] should be thrownBy GameLogic.setChip(Failure(new Exception("Nevermind"))).get
+      val columnFullField = automaticField.play(0 -> player1, 0 -> player2, 0 -> player1, 0 -> player2,0 -> player1, 0 -> player2)
+      an [Exception] should be thrownBy GameLogic.setChip(RoundModel(0, columnFullField, player1)).get
     }
 
     "return a failure if a invalid column to insert the chip was selected" in {
-      an [Exception] should be thrownBy GameLogic.setChip(Success(RoundModel(42, initialField, player1))).get
+      an [Exception] should be thrownBy GameLogic.setChip(RoundModel(42, initialField, player1)).get
     }
 
     "return the next free row for token" in {
       val column = 0
       GameLogic.getNextEmptyRow(column, initialField) should be (Some(0))
 
-      val round2Field = initialField.play(
+      val round2Field = automaticField.play(
         0 -> player1,
         0 -> player2
       )
@@ -52,7 +74,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return None if the column where the token should be placed is full" in {
-      val fullColumnMatchfield = initialField.play(
+      val fullColumnMatchfield = automaticField.play(
         0 -> player1, 0 -> player2,
         0 -> player1, 0 -> player2,
         0 -> player1, 0 -> player2
@@ -65,25 +87,14 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
        an [Exception] should be thrownBy GameLogic.getNextEmptyRow(10, initialField)
     }
 
-    "return a new Player with Name and sign" in {
-      GameLogic.getInitialPlayerModel("Pascal", 'x').name should be ("Pascal")
-    }
-
     "return with an empty list the value false" in {
       GameLogic.checkIfSomeoneWon(initialField, player1) should be (false)
-    }
-
-    "return an string output from matchfield" in {
-      val players = Vector[PlayerModel](player1, player2)
-      val currentMatchField = initialField.play(
-        0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1)
-      GameLogic.getMatchfieldOutput(players, currentMatchField) should be ("------- Connect Four  -------\n| Max Mustermann : x\n| Erika Mustermann : o\n--------------------------\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(-, -, -, -, -, -, -)\nVector(x, o, x, o, x, o, x)\n---------------------------\n      |1| 2| 3| 4| 5| 6| 7|")
     }
 
     "return the last free row for token" in {
       val column = 0
 
-      val round5matchField = initialField.play(
+      val round5matchField = automaticField.play(
         0 -> player1, 0 -> player2,
         0 -> player1,  0 -> player2,
         0 -> player1
@@ -91,27 +102,14 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       GameLogic.getNextEmptyRow(column, round5matchField) should be (Some(5))
     }
 
-    "return a Success that contains a RoundResultGameOver if the game is over for some reason" in {
-      val matchfieldWithWinner = initialField.play(0 -> player1, 1 -> player1, 2 -> player1)
-      GameLogic.playRound(Success(RoundModel(3, matchfieldWithWinner, player1))).get shouldBe a [RoundResultGameOver]
-    }
-
-    "return a Success with the value None if the game is not over yet" in {
-      GameLogic.playRound(Success(RoundModel(0, initialField, player1))).get shouldBe a [RoundResultMoveOk]
-    }
-
-    "return a Failure if there was a failure while playing a round (i.e. setting the chip and checking if the game is over)" in {
-      val fullColumnField = initialField.play(0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1, 0 -> player1)
-      an [Exception] should be thrownBy GameLogic.playRound(Success(RoundModel(0, fullColumnField, player2))).get
-    }
-
-    "return a Failure if the incoming Try[RoundModel] already was a failure" in {
-      an [Exception] should be thrownBy GameLogic.playRound(Failure(new Exception("Nevermind"))).get
+    "return false if the symbol list is empty" in {
+      val list : List[Boolean] = List()
+      GameLogic.numberOfSuccessivelySymbols(list,0,0) should be (0)
     }
 
     "return true if the game is draw" in {
 
-      val drawMatchField = initialField.play(
+      val drawMatchField = automaticField.play(
         0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
         0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
         0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
@@ -124,7 +122,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return false if the game is not a draw" in {
-      val notDrawMatchField = initialField.play(
+      val notDrawMatchField = automaticField.play(
         0 -> noPlayerPlayer, 1 -> noPlayerPlayer, 2 -> noPlayerPlayer, 3 -> noPlayerPlayer, 4 -> noPlayerPlayer, 5 -> noPlayerPlayer, 6 -> noPlayerPlayer,
         0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
         0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
@@ -137,7 +135,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return a 'The game is over, drawn' if that's the case" in {
-      val drawMatchField = initialField.play(
+      val drawMatchField = automaticField.play(
         0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
         0 -> player2, 1 -> player1, 2 -> player2, 3 -> player1, 4 -> player2, 5 -> player1, 6 -> player2,
         0 -> player1, 1 -> player2, 2 -> player1, 3 -> player2, 4 -> player1, 5 -> player2, 6 -> player1,
@@ -150,7 +148,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return a string that mentions which player has won if that's the case" in {
-      val winnerMatchfield = initialField.play(
+      val winnerMatchfield = automaticField.play(
         0 -> player1,
         1 -> player1, 2 -> player1, 3 -> player1, 4 -> player1,
         5 -> player2, 6 -> player1,
@@ -164,7 +162,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return a Success(None) if the game continues" in {
-      val gameNotOverMatchfield = initialField.play(
+      val gameNotOverMatchfield = automaticField.play(
         0-> player2, 1 -> player1
       )
 
@@ -176,7 +174,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return the number of successively tokens diagonal" in {
-      val finalMatchField = initialField.play(
+      val finalMatchField = automaticField.play(
         0 -> player1,
         1 -> player1, 1 -> player1,
         2 -> player1, 2 -> player1, 2 -> player1,
@@ -187,7 +185,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return the boolean of successively tokens diagonal" in{
-      val finalMatchField = initialField.play(
+      val finalMatchField = automaticField.play(
         0 -> player1,
         1 -> player1, 1 -> player1,
         2 -> player1, 2 -> player1, 2 -> player1,
@@ -198,7 +196,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return true if player won with 4 tokens horizontal" in {
-      val finalMatchField = initialField.play(
+      val finalMatchField = automaticField.play(
         0 -> player1, 1 -> player1, 2 -> player1, 3 -> player1,
       )
 
@@ -206,7 +204,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return true if player won with 4 tokens vertical" in {
-      val finalMatchField = initialField.play(
+      val finalMatchField = automaticField.play(
         0 -> player1,
         0 -> player1,
         0 -> player1,
@@ -217,7 +215,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return true if 4 tokens are vertical from position 0|0 -> 3|3"  in {
-      val finalMatchField = initialField.play(
+      val finalMatchField = automaticField.play(
         0 -> player1,
         1 -> player1, 1 -> player1,
         2 -> player1, 2 -> player1, 2 -> player1,
@@ -228,7 +226,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return the boolean of unsuccessively tokens diagonal" in {
-      val finalMatchField = initialField.play(
+      val finalMatchField = automaticField.play(
         1 -> player1,
         2 -> player1
       )
@@ -236,5 +234,18 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
       GameLogic.checkIfSomeoneWon(finalMatchField, player1) should be (false)
     }
 
+    "return a list with the empty columns" in {
+      val finalMatchField = automaticField.play(
+        0 -> player1,
+        1 -> player1, 1 -> player1,
+        2 -> player1, 2 -> player1, 2 -> player1,
+        3 -> player1, 3 -> player1, 3 -> player1, 3 -> player1,
+        4 -> player1, 4 -> player1, 4 -> player1, 4 -> player1, 4 -> player1,
+        5 -> player1, 5 -> player1, 5 -> player1, 5 -> player1, 5 -> player1, 5 -> player1,
+        6 -> player1, 6 -> player1, 6 -> player1, 6 -> player1, 6 -> player1, 6 -> player1
+      )
+
+      GameLogic.getEmptyColumns(finalMatchField) should be (List(0,1,2,3,4))
+    }
   }
 }

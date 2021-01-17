@@ -1,7 +1,7 @@
 package dsl
 
-import controllers.GameLogic
 import model.{MatchfieldModel, PlayerModel, RoundModel}
+import util.GameLogic
 
 import scala.util.Try
 
@@ -15,7 +15,7 @@ class ColumnMediator(val player:PlayerModel) {
 
 class MatchfieldMediator(colIndex: Int, player: PlayerModel) {
   def ofMatchfield(matchfield: MatchfieldModel[PlayerModel]):Try[RoundModel] = {
-    GameLogic.setChip(Try(RoundModel(colIndex, matchfield, player)))
+    GameLogic.setChip(RoundModel(colIndex, matchfield, player))
   }
 }
 

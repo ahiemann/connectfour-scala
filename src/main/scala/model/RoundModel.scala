@@ -1,3 +1,3 @@
 package model
 
-case class RoundModel(val columnIndex:Int, val matchField: MatchfieldModel[PlayerModel], val player: PlayerModel)
+case class RoundModel(columnIndex:Int, matchfield: MatchfieldModel[PlayerModel], player: PlayerModel)
