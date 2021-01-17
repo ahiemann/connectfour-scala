@@ -81,7 +81,7 @@ object GameLogic:
           case Some(rowIndex) =>
             val updatedMatchfield = roundData.matchfield.setToken(rowIndex, columnIndex, player)
             Success(RoundModel(columnIndex, updatedMatchfield, player))
-          case None => Failure(new Exception("The column is full"))
+          case None => Failure(Exception("The column is full"))
         case Failure(exception) => Failure(exception)
 
   def checkIfGameIsOver(roundData: Try[RoundModel]): Try[Option[String]] = roundData match

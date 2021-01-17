@@ -10,7 +10,7 @@ import scala.util.{Failure, Success}
 class GameLogicSpec extends AnyWordSpec with Matchers {
   "The GameLogic" should {
     val initialField = GameLogic.getInitialMatchField
-    val automaticField = new AutomaticMatchfield(initialField)
+    val automaticField = AutomaticMatchfield(initialField)
     val player1 = RealPlayer("Max Mustermann")
     val player2 = RealPlayer("Erika Mustermann", 'o')
     val player3 = RealPlayer("Hans Peter", 'o')
@@ -170,7 +170,7 @@ class GameLogicSpec extends AnyWordSpec with Matchers {
     }
 
     "return a Failure if the input for checkIfGameIsOver already was a failure" in {
-      an [Exception] should be thrownBy GameLogic.checkIfGameIsOver(Failure(new Exception("Not relevant"))).get
+      an [Exception] should be thrownBy GameLogic.checkIfGameIsOver(Failure(Exception("Not relevant"))).get
     }
 
     "return the number of successively tokens diagonal" in {

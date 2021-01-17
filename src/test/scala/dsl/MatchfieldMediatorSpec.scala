@@ -13,7 +13,7 @@ class MatchfieldMediatorSpec extends AnyWordSpec with Matchers {
     val player = RealPlayer("Max Mustermann", 'O')
 
     val matchfield = GameLogic.getInitialMatchField
-    val matchfieldMediator = new MatchfieldMediator(1, player)
+    val matchfieldMediator = MatchfieldMediator(1, player)
 
     "return a Try of a RoundModel object when the ofMatchfield function is called" in  {
       matchfieldMediator.ofMatchfield(matchfield) shouldBe a [Try[_]]

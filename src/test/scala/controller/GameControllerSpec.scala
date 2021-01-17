@@ -12,16 +12,16 @@ import java.io.ByteArrayInputStream
 
 class GameControllerSpec extends AnyWordSpec with Matchers {
   "The GameController" should {
-    val controller = new GameController(new Tui)
+    val controller = GameController(new Tui)
     val initialField = GameLogic.getInitialMatchField
-    val automaticField = new AutomaticMatchfield(initialField)
+    val automaticField = AutomaticMatchfield(initialField)
     val player1 = RealPlayer("Max Mustermann")
     val player2 = RealPlayer("Erika Mustermann", 'o')
 
     "return a initial matchfield, and two real players if game mode 2 was selected (including two invalid inputs)" in {
       val stdinString ="""Pascal
                          |Andreas""".stripMargin
-      val stdin = new ByteArrayInputStream(stdinString.getBytes)
+      val stdin = ByteArrayInputStream(stdinString.getBytes)
       Console.withIn(stdin) {
         val result = controller.startGame()
         result._1 shouldBe a [RealPlayer]
@@ -35,7 +35,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
         """wrongInput
           |99
           |2""".stripMargin
-      val stdin = new ByteArrayInputStream(stdinString.getBytes)
+      val stdin = ByteArrayInputStream(stdinString.getBytes)
       Console.withIn(stdin) {
         val result = controller.playRound(initialField, player1, player2, player1)
         val tupel = result.left.getOrElse("").asInstanceOf[(PlayerModel, MatchfieldModel[PlayerModel])]

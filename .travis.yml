@@ -3,7 +3,4 @@ scala:
   - 3.0.0-M3
 
 script:
-  - sbt clean coverage test coverageReport
-
-after_success:
-  - sbt coverageReport coveralls
+  - sbt clean test
